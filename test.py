@@ -1,6 +1,6 @@
 import wx
 
-#creating mainframe using class
+#creating main window
 class MainFrame(wx.Frame):
     def __init__(self, parent=None, title="Financial Reporter"):
         super(MainFrame, self).__init__(parent, title=title, size=(1000, 700))
@@ -8,9 +8,12 @@ class MainFrame(wx.Frame):
         self.Center()
         self.Show(True)
 
-if __name__ == "__main__":
+def start_app():
     app = wx.App(False)
 
     frame = MainFrame()
 
     app.MainLoop()
+
+if __name__ == "__main__":
+    start_app()
