@@ -1,0 +1,181 @@
+import wx
+import cx_Oracle  # pip install cx_Oracle   (or oracledb: pip install oracledb)
+
+class OracleLoginDialog(wx.Dialog):
+    def __init__(self):
+        super().__init__(None, title="Connect to Oracle Database", size=(400, 320))
+        self.connection = None
+
+        # Modern look
+        self.SetBackgroundColour(wx.Colour("#f8f9fa"))
+        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName="Segoe UI")
+        bold_font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, faceName="Segoe UI")
+
+        panel = wx.Panel(self)
+        panel.SetFont(font)
+
+        vbox = wx.BoxSizer(wx.VERTICAL)
+
+        # Title
+        title = wx.StaticText(panel, label="Oracle Database Connection")
+        title.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+        title.SetForegroundColour(wx.Colour("#212529"))
+        vbox.Add(title, 0, wx.ALL | wx.ALIGN_CENTER, 20)
+
+        # Form fields
+        fields = [
+            ("Host:", "localhost"),
+            ("Port:", "1521"),
+            ("Service Name / SID:", "XE"),
+            ("Username:", "hr"),
+            ("Password:", ""),
+        ]
+
+        self.text_ctrls = {}
+        for label_text, default in fields:
+            hbox = wx.BoxSizer(wx.HORIZONTAL)
+            label = wx.StaticText(panel, label=label_text, size=(120, -1))
+            label.SetFont(bold_font)
+            hbox.Add(label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 8)
+
+            if "Password" in label_text:
+                ctrl = wx.TextCtrl(panel, value=default, style=wx.TE_PASSWORD)
+            else:
+                ctrl = wx.TextCtrl(panel, value=default)
+            ctrl.SetMinSize((200, -1))
+            self.text_ctrls[label_text] = ctrl
+            hbox.Add(ctrl, 1, wx.ALL | wx.EXPAND, 8)
+            vbox.Add(hbox, 0, wx.EXPAND)
+
+        # Buttons
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        connect_btn = wx.Button(panel, label="Connect")
+        connect_btn.SetBackgroundColour(wx.Colour("#0d6efd"))
+        connect_btn.SetForegroundColour(wx.WHITE)
+        connect_btn.SetFont(bold_font)
+        connect_btn.Bind(wx.EVT_BUTTON, self.on_connect)
+
+        cancel_btn = wx.Button(panel, label="Cancel")
+        cancel_btn.Bind(wx.EVT_BUTTON, lambda e: self.EndModal(wx.ID_CANCEL))
+
+        btn_sizer.AddStretchSpacer()
+        btn_sizer.Add(cancel_btn, 0, wx.ALL, 10)
+        btn_sizer.Add(connect_btn, 0, wx.ALL, 10)
+
+        vbox.Add(btn_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
+
+        # Status line
+        self.status = wx.StaticText(panel, label="Ready")
+        self.status.SetForegroundColour(wx.Colour("red"))
+        vbox.Add(self.status, 0, wx.ALL | wx.LEFT, 20)
+
+        panel.SetSizer(vbox)
+        self.Centre()
+
+    def on_connect(self, event):
+        host = self.text_ctrls["Host:"].GetValue().strip()
+        port = self.text_ctrls["Port:"].GetValue().strip() or "1521"
+        service = self.text_ctrls["Service Name / SID:"].GetValue().strip()
+        user = self.text_ctrls["Username:"].GetValue().strip()
+        password = self.text_ctrls["Password:"].GetValue()
+
+        if not all([host, service, user]):
+            self.status.SetLabel("Please fill all fields except password")
+            return
+
+        self.status.SetLabel("Connecting...")
+        self.status.SetForegroundColour(wx.Colour("blue"))
+        self.Update()
+
+        try:
+            dsn = cx_Oracle.makedsn(host, port, service_name=service)
+            self.connection = cx_Oracle.connect(user=user, password=password, dsn=sn)
+            self.status.SetLabel("Connected successfully!")
+            self.status.SetForegroundColour(wx.Colour("green"))
+            self.Update()
+            wx.MilliSleep(800)
+            self.EndModal(wx.ID_OK)
+        except cx_Oracle.Error as err:
+            error, = err.args
+            self.status.SetLabel(f"Connection failed: {error.message}")
+            self.status.SetForegroundColour(wx.Colour("red"))
+
+
+class MainFrame(wx.Frame):
+    def __init__(self, connection):
+        super().__init__(None, title="My Oracle Application - Connected", size=(1000, 700))
+        self.connection = connection
+
+        # Modern styling
+        self.SetBackgroundColour(wx.Colour("#ffffff"))
+        wx.SystemOptions.SetOption("msw.remap", "0")  # Important for Windows 10/11 look
+
+        # Menu Bar
+        menubar = wx.MenuBar()
+
+        # File Menu
+        file_menu = wx.Menu()
+        file_menu.Append(wx.ID_OPEN, "&Open...\tCtrl+O")
+        file_menu.AppendSeparator()
+        quit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tCtrl+Q", "Exit the application")
+        self.Bind(wx.EVT_MENU, self.on_quit, quit_item)
+        menubar.Append(file_menu, "&File")
+
+        # Database Menu
+        db_menu = wx.Menu()
+        db_menu.Append(wx.ID_REFRESH, "&Refresh\tF5")
+        reconnect_item = db_menu.Append(wx.ID_ANY, "&Reconnect...", "Reconnect to database")
+        self.Bind(wx.EVT_MENU, self.on_reconnect, reconnect_item)
+        menubar.Append(db_menu, "&Database")
+
+        # Help Menu
+        help_menu = wx.Menu()
+        help_menu.Append(wx.ID_ABOUT, "&About")
+        menubar.Append(help_menu, "&Help")
+
+        self.SetMenuBar(menubar)
+
+        # Status bar
+        self.CreateStatusBar()
+        self.SetStatusText(f"Connected as {connection.username}@{connection.dsn}")
+
+        # Simple welcome panel
+        panel = wx.Panel(self)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        text = wx.StaticText(panel, label="Welcome! You are successfully connected to Oracle.\nAdd your widgets here.")
+        text.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+        vbox.Add(text, 0, wx.ALL | wx.ALIGN_CENTER, 50)
+        panel.SetSizer(vbox)
+
+        self.Centre()
+        self.Show()
+
+    def on_quit(self, event):
+        self.Close()
+
+    def on_reconnect(self, event):
+        self.Close()
+        start_app()  # Restart login process
+
+
+def start_app():
+    app = wx.App(False)
+
+    # Apply modern look (especially important on Windows)
+    wx.SystemOptions.SetOption("msw.remap", "0")
+    app.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName="Segoe UI"))
+
+    # Show login dialog
+    login_dlg = OracleLoginDialog()
+    if login_dlg.ShowModal() == wx.ID_OK and login_dlg.connection:
+        # Success → open main window
+        MainFrame(login_dlg.connection)
+        login_dlg.Destroy()
+        app.MainLoop()
+    else:
+        login_dlg.Destroy()
+        print("Connection cancelled or failed.")
+
+
+if __name__ == "__main__":
+    start_app()
