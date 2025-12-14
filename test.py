@@ -1,5 +1,5 @@
 import wx
-#import oracledb
+import oracledb
 
 #oracledb.init_oracle_client(lib_dir=r"C:\\")
 
@@ -103,6 +103,26 @@ class MainFrame(wx.Frame):
 
         self.Center()
         self.Show(True)
+
+        menubar = wx.MenuBar()
+
+        # --- File Menu ---
+        file_menu = wx.Menu()
+        file_menu.Append(wx.ID_NEW, "&New\tCtrl+N", "Create a new file")
+        file_menu.Append(wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file")
+        file_menu.AppendSeparator()
+        exit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tAlt+F4", "Exit the application")
+
+        menubar.Append(file_menu, "&File")
+
+        # --- Help Menu ---
+        help_menu = wx.Menu()
+        about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
+
+        menubar.Append(help_menu, "&Help")
+
+        # Attach the menu bar to the frame
+        self.SetMenuBar(menubar)
 
 def start_app():
     app = wx.App(False)
