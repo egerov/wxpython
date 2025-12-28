@@ -14,6 +14,7 @@ class OracleConnectionDialog(wx.Dialog):
         # Username
         main_sizer.Add(wx.StaticText(panel, label="Username:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_user = wx.TextCtrl(panel)
+        self.txt_user.SetValue('gerov_evgeniy[LAB_BUH]')
         main_sizer.Add(self.txt_user, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Password
@@ -24,7 +25,7 @@ class OracleConnectionDialog(wx.Dialog):
         # Host
         main_sizer.Add(wx.StaticText(panel, label="Host:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_host = wx.TextCtrl(panel)
-        self.txt_host.SetValue("localhost")
+        self.txt_host.SetValue("udwh.base.roscap.com")
         main_sizer.Add(self.txt_host, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Port
@@ -36,7 +37,7 @@ class OracleConnectionDialog(wx.Dialog):
         # Service Name
         main_sizer.Add(wx.StaticText(panel, label="Service Name:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_service = wx.TextCtrl(panel)
-        self.txt_service.SetValue("orclpdb")  # Common for local PDB
+        self.txt_service.SetValue("udwh")
         main_sizer.Add(self.txt_service, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Buttons
