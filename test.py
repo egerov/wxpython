@@ -156,6 +156,9 @@ class MainFrame(wx.Frame):
         # Attach the menu bar to the frame
         self.SetMenuBar(menubar)
 
+        toolbar = self.CreateToolBar()
+
+
 def start_app():
     app = wx.App(False)
 
