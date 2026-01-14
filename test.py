@@ -1,5 +1,6 @@
 import wx
 import oracledb
+import os
 
 #oracledb.init_oracle_client(lib_dir=r"C:\\")
 
@@ -156,8 +157,14 @@ class MainFrame(wx.Frame):
         # Attach the menu bar to the frame
         self.SetMenuBar(menubar)
 
-        toolbar = self.CreateToolBar()
-
+        toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
+        accounting = toolbar.AddTool(wx.ID_ANY, 'Accounting', load_icon('1.png'), 'Accounting')
+        reporting = toolbar.AddTool(wx.ID_ANY, 'Reporting', load_icon('2.png'), 'Reporting')
+        excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Excel')
+        open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
+        upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
+        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('1.png'), 'Database')
+        toolbar.Realize()
 
 def start_app():
     app = wx.App(False)
@@ -169,6 +176,16 @@ def start_app():
     dlg.Destroy()
 
     app.MainLoop()
+
+
+def load_icon(filename):
+    path = os.path.join('icons', filename)
+    bmp = wx.Bitmap(path)
+    if not bmp.IsOk():
+        print(f'Warning: Could not load icon: {path}')
+
+    return bmp
+
 
 if __name__ == "__main__":
     start_app()
