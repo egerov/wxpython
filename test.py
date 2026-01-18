@@ -162,7 +162,7 @@ class MainFrame(wx.Frame):
         excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Excel')
         open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
-        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('1.png'), 'Database')
+        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
         toolbar.Realize()
 
         #UNDER CONSTRUCTION
@@ -171,11 +171,14 @@ class MainFrame(wx.Frame):
 
         self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
 
-        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_SUNKEN)
+        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
         left_sizer = wx.BoxSizer(wx.VERTICAL)
-        left_sizer.Add(wx.StaticText(self.left_panel, label = "Left Panel"), 0, wx.ALL, 15)
+
+        #header = wx.StaticText(self.left_panel, label="Balance Sheet", style = wx.ALIGN_LEFT)
+        #header.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+        #left_sizer.Add(header, 0, wx.ALL | wx.EXPAND, 10)
         self.left_panel.SetSizer(left_sizer)
-        self.left_panel.SetBackgroundColour("e3f2fd")
+        self.left_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
 
         self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
         right_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -184,54 +187,53 @@ class MainFrame(wx.Frame):
         self.right_panel.SetBackgroundColour("f5f5f5")
 
         self.splitter.SplitVertically(self.left_panel, self.right_panel)
-        self.splitter.SetSashPosition(320, True)
-        self.splitter.SetMinimumPaneSize(180)
+        self.splitter.SetSashPosition(250, True)
+        self.splitter.SetMinimumPaneSize(200)
 
         #adding splitter to main sizer
         self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
         self.SetSizer(self.main_sizer)
         self.SetMinSize((800, 500))
 
+        #creating tree control
+        self.tree = wx.TreeCtrl(self.left_panel, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
+        root = self.tree.AddRoot("Hidden Root")
+
+        #adding independent main items
+        balance_sheet = self.tree.AppendItem(root, "Balance Sheet")
+        profit_loss = self.tree.AppendItem(root, "Profit and Loss")
+
+        assets = self.tree.AppendItem(balance_sheet, "Assets")
+        self.tree.AppendItem(assets, "Cash and cash equivalents")
+        self.tree.AppendItem(assets, "Due from banks")
+        self.tree.AppendItem(assets, "Securities")
+        self.tree.AppendItem(assets, "Loans to customers")
+        self.tree.AppendItem(assets, "Property, plant and equipment")
+        self.tree.AppendItem(assets, "Other assets")
+
+        liabilities = self.tree.AppendItem(balance_sheet, "Liabilities")
+        self.tree.AppendItem(liabilities, "Due to banks")
+        self.tree.AppendItem(liabilities, "Due to customers")
+
+        equity = self.tree.AppendItem(balance_sheet, "Equity")
+        self.tree.AppendItem(equity, "Share capital")
+        self.tree.AppendItem(equity, "Capital surplus")
+
+        income = self.tree.AppendItem(profit_loss, "Income")
+        self.tree.AppendItem(income, "Interest income")
+        self.tree.AppendItem(income, "Fee income")
+        self.tree.AppendItem(income, "Commission income")
+
+        expense = self.tree.AppendItem(profit_loss, "Expense")
+        self.tree.AppendItem(expense, "Interest expense")
 
 
-        #self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #expanding main categories by default
+        self.tree.ExpandAll()
+        #self.tree.Expand(assets)
+        #self.tree.Expand(liabilities)
 
-        #creating left window
-        #self.left_panel = wx.Panel(self, size=(240, -1))
-        #self.left_panel.SetBackgroundColour("#29c71a")
-
-        #left_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        #left_sizer.Add(title, 0, wx.ALL | wx.CENTER, 15)
-        #left_sizer.Add(wx.StaticLine(self.left_panel), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-
-        #creating main window
-        #self.right_panel = wx.Panel(self)
-        #self.right_panel.SetBackgroundColour("#141414")
-
-        #right_sizer = wx.BoxSizer(wx.VERTICAL)
-        #self.right_panel.SetSizer(right_sizer)
-
-
-        #creating left window
-        #self.tree = wx.TreeCtrl(self, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
-
-        #self._mgr.AddPane(self.tree, aui.AuiPaneInfo()
-        #                  .Name('Sidebar')
-        #                  .Caption('Accounting')
-        #                  .Left()
-        #                  .CloseButton(False)
-        #                  .MinSize(220, -1)
-        #                  .BestSize(260, -1))
-
-               #self._mgr.Update()
-
-        #binding events
-        #self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnTabChanged)
-        #self.Bind(wx.EVT_MENU, self.onQuit, id=wx.ID_EXIT)
-
-        #initial state
-        #self.UpdateTree()
+        left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
 
         self.Centre()
         self.Show()
