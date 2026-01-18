@@ -1,5 +1,6 @@
 import wx
 import oracledb
+import wx.lib.agw.aui as aui
 import os
 
 #oracledb.init_oracle_client(lib_dir=r"C:\\")
@@ -103,9 +104,6 @@ class MainFrame(wx.Frame):
     def __init__(self, parent=None, title="Financial Reporter"):
         super(MainFrame, self).__init__(parent, title=title, size=(1000, 700))
 
-        self.Center()
-        self.Show(True)
-
         menubar = wx.MenuBar()
 
         # --- File Menu ---
@@ -157,6 +155,7 @@ class MainFrame(wx.Frame):
         # Attach the menu bar to the frame
         self.SetMenuBar(menubar)
 
+        #creating toolbar
         toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
         accounting = toolbar.AddTool(wx.ID_ANY, 'Accounting', load_icon('1.png'), 'Accounting')
         reporting = toolbar.AddTool(wx.ID_ANY, 'Reporting', load_icon('2.png'), 'Reporting')
@@ -165,6 +164,78 @@ class MainFrame(wx.Frame):
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('1.png'), 'Database')
         toolbar.Realize()
+
+        #UNDER CONSTRUCTION
+
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
+
+        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_SUNKEN)
+        left_sizer = wx.BoxSizer(wx.VERTICAL)
+        left_sizer.Add(wx.StaticText(self.left_panel, label = "Left Panel"), 0, wx.ALL, 15)
+        self.left_panel.SetSizer(left_sizer)
+        self.left_panel.SetBackgroundColour("e3f2fd")
+
+        self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
+        right_sizer = wx.BoxSizer(wx.VERTICAL)
+        right_sizer.Add(wx.StaticText(self.right_panel, label = "Right Panel"), 0, wx.ALL, 15)
+        self.right_panel.SetSizer(right_sizer)
+        self.right_panel.SetBackgroundColour("f5f5f5")
+
+        self.splitter.SplitVertically(self.left_panel, self.right_panel)
+        self.splitter.SetSashPosition(320, True)
+        self.splitter.SetMinimumPaneSize(180)
+
+        #adding splitter to main sizer
+        self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
+        self.SetSizer(self.main_sizer)
+        self.SetMinSize((800, 500))
+
+
+
+        #self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        #creating left window
+        #self.left_panel = wx.Panel(self, size=(240, -1))
+        #self.left_panel.SetBackgroundColour("#29c71a")
+
+        #left_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        #left_sizer.Add(title, 0, wx.ALL | wx.CENTER, 15)
+        #left_sizer.Add(wx.StaticLine(self.left_panel), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+        #creating main window
+        #self.right_panel = wx.Panel(self)
+        #self.right_panel.SetBackgroundColour("#141414")
+
+        #right_sizer = wx.BoxSizer(wx.VERTICAL)
+        #self.right_panel.SetSizer(right_sizer)
+
+
+        #creating left window
+        #self.tree = wx.TreeCtrl(self, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
+
+        #self._mgr.AddPane(self.tree, aui.AuiPaneInfo()
+        #                  .Name('Sidebar')
+        #                  .Caption('Accounting')
+        #                  .Left()
+        #                  .CloseButton(False)
+        #                  .MinSize(220, -1)
+        #                  .BestSize(260, -1))
+
+               #self._mgr.Update()
+
+        #binding events
+        #self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnTabChanged)
+        #self.Bind(wx.EVT_MENU, self.onQuit, id=wx.ID_EXIT)
+
+        #initial state
+        #self.UpdateTree()
+
+        self.Centre()
+        self.Show()
+
 
 def start_app():
     app = wx.App(False)
