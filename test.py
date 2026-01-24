@@ -144,8 +144,8 @@ class MainFrame(wx.Frame):
 
         # --- Navigate Menu ---
         navigate_menu = wx.Menu()
-        self.mnu_accounting = navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
-        self.mnu_reports = navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
+        self.mnu_accounting = navigate_menu.Append(wx.ID_ANY, "&Accounting\tCtrl+A", "Accounting")
+        self.mnu_reports = navigate_menu.Append(wx.ID_ANY, "&Reports\tCtrl+R", "Reports")
 
         menubar.Append(navigate_menu, "&Navigate")
 
@@ -169,7 +169,6 @@ class MainFrame(wx.Frame):
 
         # Attach the menu bar to the frame
         self.SetMenuBar(menubar)
-
         self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
         self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
 
@@ -266,9 +265,15 @@ class MainFrame(wx.Frame):
             self.tree.ExpandAll()
 
         elif self.current_view == 'Reports':
-            self.tree.AppendItem(self.tree_root, 'LCR')
-            self.tree.AppendItem(self.tree_root, 'NSFR')
+            liquidity = self.tree.AppendItem(self.tree_root, 'Liquidity ratios')
+            cbr = self.tree.AppendItem(self.tree_root, 'Central Bank')
 
+            self.tree.AppendItem(liquidity, 'Liquidy Current Ratio')
+            self.tree.AppendItem(liquidity, 'Net Stable Funding Ratio')
+
+            self.tree.AppendItem(cbr, 'Weighted average rates')
+
+            self.tree.ExpandAll()
 
 
 def start_app():
