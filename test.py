@@ -195,8 +195,6 @@ class MainFrame(wx.Frame):
 
         self.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChanged, self.date_ctrl)
 
-
-
         toolbar.Realize()
 
 
