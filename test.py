@@ -105,16 +105,8 @@ class MainFrame(wx.Frame):
         super(MainFrame, self).__init__(parent, title=title, size=(1000, 700))
 
         self.CreateMenu()
+        self.CreateTools()
 
-        #creating toolbar
-        toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
-        accounting = toolbar.AddTool(wx.ID_ANY, 'Accounting', load_icon('1.png'), 'Accounting')
-        reporting = toolbar.AddTool(wx.ID_ANY, 'Reporting', load_icon('2.png'), 'Reporting')
-        excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Excel')
-        open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
-        upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
-        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
-        toolbar.Realize()
 
 
           #UNDER CONSTRUCTION
@@ -193,56 +185,68 @@ class MainFrame(wx.Frame):
 
     def CreateMenu(self):
 
-            menubar = wx.MenuBar()
+        menubar = wx.MenuBar()
 
-            # --- File Menu ---
-            file_menu = wx.Menu()
-            file_menu.Append(wx.ID_NEW, "&New\tCtrl+N", "Create a new file")
-            file_menu.Append(wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file")
-            file_menu.AppendSeparator()
-            exit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tAlt+F4", "Exit the application")
+        # --- File Menu ---
+        file_menu = wx.Menu()
+        file_menu.Append(wx.ID_NEW, "&New\tCtrl+N", "Create a new file")
+        file_menu.Append(wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file")
+        file_menu.AppendSeparator()
+        exit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tAlt+F4", "Exit the application")
 
-            menubar.Append(file_menu, "&File")
+        menubar.Append(file_menu, "&File")
 
-            # --- Edit Menu ---
-            edit_menu = wx.Menu()
-            edit_menu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Edit a report")
+        # --- Edit Menu ---
+        edit_menu = wx.Menu()
+        edit_menu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Edit a report")
 
-            menubar.Append(edit_menu, "&Edit")
+        menubar.Append(edit_menu, "&Edit")
 
-            # --- View Menu ---
-            view_menu = wx.Menu()
-            view_menu.Append(wx.ID_VIEW_DETAILS, "&View\tCtrl+V", "View details")
+        # --- View Menu ---
+        view_menu = wx.Menu()
+        view_menu.Append(wx.ID_VIEW_DETAILS, "&View\tCtrl+V", "View details")
 
-            menubar.Append(view_menu, "&View")
+        menubar.Append(view_menu, "&View")
 
-            # --- Navigate Menu ---
-            navigate_menu = wx.Menu()
-            navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
-            navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
+        # --- Navigate Menu ---
+        navigate_menu = wx.Menu()
+        navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
+        navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
 
-            menubar.Append(navigate_menu, "&Navigate")
+        menubar.Append(navigate_menu, "&Navigate")
 
-             # --- Tools Menu ---
-            tools_menu = wx.Menu()
-            tools_menu.Append(wx.ID_VIEW_DETAILS, "&Tools\tCtrl+T", "Tools")
+        # --- Tools Menu ---
+        tools_menu = wx.Menu()
+        tools_menu.Append(wx.ID_VIEW_DETAILS, "&Tools\tCtrl+T", "Tools")
 
-            menubar.Append(tools_menu, "&Tools")
+        menubar.Append(tools_menu, "&Tools")
 
-            # --- Window Menu ---
-            window_menu = wx.Menu()
-            window_menu.Append(wx.ID_VIEW_DETAILS, "&Window\tCtrl+W", "Window")
+        # --- Window Menu ---
+        window_menu = wx.Menu()
+        window_menu.Append(wx.ID_VIEW_DETAILS, "&Window\tCtrl+W", "Window")
 
-            menubar.Append(window_menu, "&Window")
+        menubar.Append(window_menu, "&Window")
 
-            # --- Help Menu ---
-            help_menu = wx.Menu()
-            about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
+        # --- Help Menu ---
+        help_menu = wx.Menu()
+        about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
 
-            menubar.Append(help_menu, "&Help")
+        menubar.Append(help_menu, "&Help")
 
-            # Attach the menu bar to the frame
-            self.SetMenuBar(menubar)
+        # Attach the menu bar to the frame
+        self.SetMenuBar(menubar)
+
+    def CreateTools(self):
+
+        #creating toolbar
+        toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
+        accounting = toolbar.AddTool(wx.ID_ANY, 'Accounting', load_icon('1.png'), 'Accounting')
+        reporting = toolbar.AddTool(wx.ID_ANY, 'Reporting', load_icon('2.png'), 'Reporting')
+        excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Excel')
+        open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
+        upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
+        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
+        toolbar.Realize()
 
 
 def start_app():
