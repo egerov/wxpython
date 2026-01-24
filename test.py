@@ -108,40 +108,10 @@ class MainFrame(wx.Frame):
         self.CreateTools()
         self.CreateLayout()
 
-        #adding independent main items
-        balance_sheet = self.tree.AppendItem(self.tree_root, "Balance Sheet")
-        profit_loss = self.tree.AppendItem(self.tree_root, "Profit and Loss")
+        #defining default view
+        self.current_view = 'Accounting'
 
-        assets = self.tree.AppendItem(balance_sheet, "Assets")
-        self.tree.AppendItem(assets, "Cash and cash equivalents")
-        self.tree.AppendItem(assets, "Due from banks")
-        self.tree.AppendItem(assets, "Securities")
-        self.tree.AppendItem(assets, "Loans to customers")
-        self.tree.AppendItem(assets, "Property, plant and equipment")
-        self.tree.AppendItem(assets, "Other assets")
-
-        liabilities = self.tree.AppendItem(balance_sheet, "Liabilities")
-        self.tree.AppendItem(liabilities, "Due to banks")
-        self.tree.AppendItem(liabilities, "Due to customers")
-
-        equity = self.tree.AppendItem(balance_sheet, "Equity")
-        self.tree.AppendItem(equity, "Share capital")
-        self.tree.AppendItem(equity, "Capital surplus")
-
-        income = self.tree.AppendItem(profit_loss, "Income")
-        self.tree.AppendItem(income, "Interest income")
-        self.tree.AppendItem(income, "Fee income")
-        self.tree.AppendItem(income, "Commission income")
-
-        expense = self.tree.AppendItem(profit_loss, "Expense")
-        self.tree.AppendItem(expense, "Interest expense")
-
-        #expanding main categories by default
-        self.tree.ExpandAll()
-        #self.tree.Expand(assets)
-        #self.tree.Expand(liabilities)
-
-
+        self.UpdateTreeView()
 
         self.Centre()
         self.Show()
@@ -220,11 +190,11 @@ class MainFrame(wx.Frame):
     #menu handlers
     def OnSwitchAccounting(self, event):
         self.current_view = 'Accounting'
-        #self.UpdateTreeView()
+        self.UpdateTreeView()
 
     def OnSwitchReports(self, event):
         self.current_view = 'Reports'
-        #self.UpdateTreeView()
+        self.UpdateTreeView()
 
 
     def CreateLayout(self):
@@ -256,6 +226,49 @@ class MainFrame(wx.Frame):
         self.tree = wx.TreeCtrl(self.left_panel, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
         self.tree_root = self.tree.AddRoot('Hidden Root')
         left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
+
+
+    def ClearTree(self):
+        self.tree.DeleteChildren(self.tree_root)
+
+    def UpdateTreeView(self):
+        self.ClearTree()
+
+        if self.current_view == 'Accounting':
+            #populating accounting tree view
+            balance_sheet = self.tree.AppendItem(self.tree_root, "Balance Sheet")
+            profit_loss = self.tree.AppendItem(self.tree_root, "Profit and Loss")
+
+            assets = self.tree.AppendItem(balance_sheet, "Assets")
+            self.tree.AppendItem(assets, "Cash and cash equivalents")
+            self.tree.AppendItem(assets, "Due from banks")
+            self.tree.AppendItem(assets, "Securities")
+            self.tree.AppendItem(assets, "Loans to customers")
+            self.tree.AppendItem(assets, "Property, plant and equipment")
+            self.tree.AppendItem(assets, "Other assets")
+
+            liabilities = self.tree.AppendItem(balance_sheet, "Liabilities")
+            self.tree.AppendItem(liabilities, "Due to banks")
+            self.tree.AppendItem(liabilities, "Due to customers")
+
+            equity = self.tree.AppendItem(balance_sheet, "Equity")
+            self.tree.AppendItem(equity, "Share capital")
+            self.tree.AppendItem(equity, "Capital surplus")
+
+            income = self.tree.AppendItem(profit_loss, "Income")
+            self.tree.AppendItem(income, "Interest income")
+            self.tree.AppendItem(income, "Fee income")
+            self.tree.AppendItem(income, "Commission income")
+
+            expense = self.tree.AppendItem(profit_loss, "Expense")
+            self.tree.AppendItem(expense, "Interest expense")
+
+            self.tree.ExpandAll()
+
+        elif self.current_view == 'Reports':
+            self.tree.AppendItem(self.tree_root, 'LCR')
+            self.tree.AppendItem(self.tree_root, 'NSFR')
+
 
 
 def start_app():
