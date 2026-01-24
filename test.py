@@ -1,6 +1,7 @@
 import wx
 import oracledb
 import wx.lib.agw.aui as aui
+import wx.adv
 import os
 
 #oracledb.init_oracle_client(lib_dir=r"C:\\")
@@ -183,6 +184,19 @@ class MainFrame(wx.Frame):
         open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
+        date = wx.StaticText(toolbar, label='Report date: ')
+        date.SetFont(wx.Font(date.GetFont()).MakeBold())
+        toolbar.AddControl(date)
+
+        #creating date picker
+        self.date_ctrl = wx.adv.DatePickerCtrl(toolbar, style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY | wx.BORDER_NONE)
+        self.date_ctrl.SetValue(wx.DateTime.Today())
+        toolbar.AddControl(self.date_ctrl)
+
+        self.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChanged, self.date_ctrl)
+
+
+
         toolbar.Realize()
 
 
@@ -274,6 +288,10 @@ class MainFrame(wx.Frame):
             self.tree.AppendItem(cbr, 'Weighted average rates')
 
             self.tree.ExpandAll()
+
+    def OnDateChanged(self, event):
+        dt = event.GetDate().Format("%Y-%m-%d")
+        print(dt)
 
 
 def start_app():
