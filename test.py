@@ -2,6 +2,7 @@ import wx
 import oracledb
 import wx.lib.agw.aui as aui
 import wx.adv
+import wx.grid
 import os
 
 #oracledb.init_oracle_client(lib_dir=r"C:\\")
@@ -221,7 +222,19 @@ class MainFrame(wx.Frame):
 
         self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
         right_sizer = wx.BoxSizer(wx.VERTICAL)
-        right_sizer.Add(wx.StaticText(self.right_panel, label = "Right Panel"), 0, wx.ALL, 15)
+
+        self.central_grid = wx.grid.Grid(self.right_panel, -1)
+        right_sizer.Add(self.central_grid, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.display_grid = wx.grid.Grid(self.right_panel, -1)
+        self.display_grid.CreateGrid(5, 5)
+        self.display_grid.SetDefaultRowSize(5)
+        self.display_grid.EnableEditing(False)
+        self.display_grid.EnableGridLines(True)
+        self.display_grid.EnableDragColSize(True)
+        self.display_grid.SetRowLabelSize(0)
+        right_sizer.Add(self.display_grid, 1, wx.EXPAND | wx.ALL, 1)
+
         self.right_panel.SetSizer(right_sizer)
         self.right_panel.SetBackgroundColour("f5f5f5")
 
