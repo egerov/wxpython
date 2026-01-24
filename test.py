@@ -106,46 +106,11 @@ class MainFrame(wx.Frame):
 
         self.CreateMenu()
         self.CreateTools()
-
-
-
-          #UNDER CONSTRUCTION
-
-        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
-
-        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
-        left_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        #header = wx.StaticText(self.left_panel, label="Balance Sheet", style = wx.ALIGN_LEFT)
-        #header.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
-        #left_sizer.Add(header, 0, wx.ALL | wx.EXPAND, 10)
-        self.left_panel.SetSizer(left_sizer)
-        self.left_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
-
-        self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
-        right_sizer = wx.BoxSizer(wx.VERTICAL)
-        right_sizer.Add(wx.StaticText(self.right_panel, label = "Right Panel"), 0, wx.ALL, 15)
-        self.right_panel.SetSizer(right_sizer)
-        self.right_panel.SetBackgroundColour("f5f5f5")
-
-        self.splitter.SplitVertically(self.left_panel, self.right_panel)
-        self.splitter.SetSashPosition(250, True)
-        self.splitter.SetMinimumPaneSize(200)
-
-        #adding splitter to main sizer
-        self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
-        self.SetSizer(self.main_sizer)
-        self.SetMinSize((800, 500))
-
-        #creating tree control
-        self.tree = wx.TreeCtrl(self.left_panel, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
-        root = self.tree.AddRoot("Hidden Root")
+        self.CreateLayout()
 
         #adding independent main items
-        balance_sheet = self.tree.AppendItem(root, "Balance Sheet")
-        profit_loss = self.tree.AppendItem(root, "Profit and Loss")
+        balance_sheet = self.tree.AppendItem(self.tree_root, "Balance Sheet")
+        profit_loss = self.tree.AppendItem(self.tree_root, "Profit and Loss")
 
         assets = self.tree.AppendItem(balance_sheet, "Assets")
         self.tree.AppendItem(assets, "Cash and cash equivalents")
@@ -171,13 +136,12 @@ class MainFrame(wx.Frame):
         expense = self.tree.AppendItem(profit_loss, "Expense")
         self.tree.AppendItem(expense, "Interest expense")
 
-
         #expanding main categories by default
         self.tree.ExpandAll()
         #self.tree.Expand(assets)
         #self.tree.Expand(liabilities)
 
-        left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
+
 
         self.Centre()
         self.Show()
@@ -210,8 +174,8 @@ class MainFrame(wx.Frame):
 
         # --- Navigate Menu ---
         navigate_menu = wx.Menu()
-        navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
-        navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
+        self.mnu_accounting = navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
+        self.mnu_reports = navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
 
         menubar.Append(navigate_menu, "&Navigate")
 
@@ -236,6 +200,10 @@ class MainFrame(wx.Frame):
         # Attach the menu bar to the frame
         self.SetMenuBar(menubar)
 
+        self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
+        self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
+
+
     def CreateTools(self):
 
         #creating toolbar
@@ -247,6 +215,47 @@ class MainFrame(wx.Frame):
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
         toolbar.Realize()
+
+
+    #menu handlers
+    def OnSwitchAccounting(self, event):
+        self.current_view = 'Accounting'
+        #self.UpdateTreeView()
+
+    def OnSwitchReports(self, event):
+        self.current_view = 'Reports'
+        #self.UpdateTreeView()
+
+
+    def CreateLayout(self):
+
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
+
+        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
+        left_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.left_panel.SetSizer(left_sizer)
+        self.left_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+        self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
+        right_sizer = wx.BoxSizer(wx.VERTICAL)
+        right_sizer.Add(wx.StaticText(self.right_panel, label = "Right Panel"), 0, wx.ALL, 15)
+        self.right_panel.SetSizer(right_sizer)
+        self.right_panel.SetBackgroundColour("f5f5f5")
+
+        self.splitter.SplitVertically(self.left_panel, self.right_panel)
+        self.splitter.SetSashPosition(250, True)
+        self.splitter.SetMinimumPaneSize(200)
+
+        #adding splitter to main sizer
+        self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
+        self.SetSizer(self.main_sizer)
+        self.SetMinSize((800, 500))
+
+        #creating tree control
+        self.tree = wx.TreeCtrl(self.left_panel, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
+        self.tree_root = self.tree.AddRoot('Hidden Root')
+        left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
 
 
 def start_app():
