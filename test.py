@@ -184,12 +184,13 @@ class MainFrame(wx.Frame):
         open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
+        toolbar.AddSeparator()
         date = wx.StaticText(toolbar, label='Report date: ')
         date.SetFont(wx.Font(date.GetFont()).MakeBold())
         toolbar.AddControl(date)
 
         #creating date picker
-        self.date_ctrl = wx.adv.DatePickerCtrl(toolbar, style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY | wx.BORDER_NONE)
+        self.date_ctrl = wx.adv.DatePickerCtrl(toolbar, style=wx.adv.DP_DEFAULT | wx.adv.DP_SHOWCENTURY | wx.BORDER_NONE)
         self.date_ctrl.SetValue(wx.DateTime.Today())
         toolbar.AddControl(self.date_ctrl)
 
