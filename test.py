@@ -104,56 +104,7 @@ class MainFrame(wx.Frame):
     def __init__(self, parent=None, title="Financial Reporter"):
         super(MainFrame, self).__init__(parent, title=title, size=(1000, 700))
 
-        menubar = wx.MenuBar()
-
-        # --- File Menu ---
-        file_menu = wx.Menu()
-        file_menu.Append(wx.ID_NEW, "&New\tCtrl+N", "Create a new file")
-        file_menu.Append(wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file")
-        file_menu.AppendSeparator()
-        exit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tAlt+F4", "Exit the application")
-
-        menubar.Append(file_menu, "&File")
-
-        # --- Edit Menu ---
-        edit_menu = wx.Menu()
-        edit_menu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Edit a report")
-
-        menubar.Append(edit_menu, "&Edit")
-
-         # --- View Menu ---
-        view_menu = wx.Menu()
-        view_menu.Append(wx.ID_VIEW_DETAILS, "&View\tCtrl+V", "View details")
-
-        menubar.Append(view_menu, "&View")
-
-            # --- Navigate Menu ---
-        navigate_menu = wx.Menu()
-        navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
-        navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
-
-        menubar.Append(navigate_menu, "&Navigate")
-
-             # --- Tools Menu ---
-        tools_menu = wx.Menu()
-        tools_menu.Append(wx.ID_VIEW_DETAILS, "&Tools\tCtrl+T", "Tools")
-
-        menubar.Append(tools_menu, "&Tools")
-
-          # --- Window Menu ---
-        window_menu = wx.Menu()
-        window_menu.Append(wx.ID_VIEW_DETAILS, "&Window\tCtrl+W", "Window")
-
-        menubar.Append(window_menu, "&Window")
-
-        # --- Help Menu ---
-        help_menu = wx.Menu()
-        about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
-
-        menubar.Append(help_menu, "&Help")
-
-        # Attach the menu bar to the frame
-        self.SetMenuBar(menubar)
+        self.CreateMenu()
 
         #creating toolbar
         toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
@@ -165,7 +116,8 @@ class MainFrame(wx.Frame):
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
         toolbar.Realize()
 
-        #UNDER CONSTRUCTION
+
+          #UNDER CONSTRUCTION
 
         self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -237,6 +189,60 @@ class MainFrame(wx.Frame):
 
         self.Centre()
         self.Show()
+
+
+    def CreateMenu(self):
+
+            menubar = wx.MenuBar()
+
+            # --- File Menu ---
+            file_menu = wx.Menu()
+            file_menu.Append(wx.ID_NEW, "&New\tCtrl+N", "Create a new file")
+            file_menu.Append(wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file")
+            file_menu.AppendSeparator()
+            exit_item = file_menu.Append(wx.ID_EXIT, "E&xit\tAlt+F4", "Exit the application")
+
+            menubar.Append(file_menu, "&File")
+
+            # --- Edit Menu ---
+            edit_menu = wx.Menu()
+            edit_menu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Edit a report")
+
+            menubar.Append(edit_menu, "&Edit")
+
+            # --- View Menu ---
+            view_menu = wx.Menu()
+            view_menu.Append(wx.ID_VIEW_DETAILS, "&View\tCtrl+V", "View details")
+
+            menubar.Append(view_menu, "&View")
+
+            # --- Navigate Menu ---
+            navigate_menu = wx.Menu()
+            navigate_menu.Append(wx.ID_NEW, "&Accounting\tCtrl+A", "Accounting")
+            navigate_menu.Append(wx.ID_NEW, "&Reports\tCtrl+R", "Reports")
+
+            menubar.Append(navigate_menu, "&Navigate")
+
+             # --- Tools Menu ---
+            tools_menu = wx.Menu()
+            tools_menu.Append(wx.ID_VIEW_DETAILS, "&Tools\tCtrl+T", "Tools")
+
+            menubar.Append(tools_menu, "&Tools")
+
+            # --- Window Menu ---
+            window_menu = wx.Menu()
+            window_menu.Append(wx.ID_VIEW_DETAILS, "&Window\tCtrl+W", "Window")
+
+            menubar.Append(window_menu, "&Window")
+
+            # --- Help Menu ---
+            help_menu = wx.Menu()
+            about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
+
+            menubar.Append(help_menu, "&Help")
+
+            # Attach the menu bar to the frame
+            self.SetMenuBar(menubar)
 
 
 def start_app():
