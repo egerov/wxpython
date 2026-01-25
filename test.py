@@ -252,14 +252,16 @@ class MainFrame(wx.Frame):
         self.right_panel.SetSizer(central_sizer) #set central_sizer to right_panel NOT to central_panel
 
         self.display_grid = wx.grid.Grid(self.dispay_panel, -1)
-        self.display_grid.CreateGrid(5, 5)
+        self.display_grid.CreateGrid(500, 100)
         self.display_grid.SetDefaultRowSize(5)
         self.display_grid.EnableEditing(False)
         self.display_grid.EnableGridLines(True)
         self.display_grid.EnableDragColSize(True)
         self.display_grid.SetRowLabelSize(0)
+        self.display_grid.SetColLabelSize(0)
         display_sizer = wx.BoxSizer(wx.VERTICAL)
         display_sizer.Add(self.display_grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
+
         self.dispay_panel.SetSizer(display_sizer)
 
 
