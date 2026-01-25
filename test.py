@@ -186,9 +186,11 @@ class MainFrame(wx.Frame):
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
         database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
         toolbar.AddSeparator()
+
         date = wx.StaticText(toolbar, label='Report date: ')
         date.SetFont(wx.Font(date.GetFont()).MakeBold())
         toolbar.AddControl(date)
+
 
         #creating date picker
         self.date_ctrl = wx.adv.DatePickerCtrl(toolbar, style=wx.adv.DP_DEFAULT | wx.adv.DP_SHOWCENTURY | wx.BORDER_NONE)
@@ -213,44 +215,50 @@ class MainFrame(wx.Frame):
     def CreateLayout(self):
 
         self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
-
-        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
-        left_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.left_panel.SetSizer(left_sizer)
-        self.left_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
-
-        self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
-        right_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        self.central_grid = wx.grid.Grid(self.right_panel, -1)
-        right_sizer.Add(self.central_grid, 1, wx.EXPAND | wx.ALL, 5)
-
-        self.display_grid = wx.grid.Grid(self.right_panel, -1)
-        self.display_grid.CreateGrid(5, 5)
-        self.display_grid.SetDefaultRowSize(5)
-        self.display_grid.EnableEditing(False)
-        self.display_grid.EnableGridLines(True)
-        self.display_grid.EnableDragColSize(True)
-        self.display_grid.SetRowLabelSize(0)
-        right_sizer.Add(self.display_grid, 1, wx.EXPAND | wx.ALL, 1)
-
-        self.right_panel.SetSizer(right_sizer)
-        self.right_panel.SetBackgroundColour("f5f5f5")
-
-        self.splitter.SplitVertically(self.left_panel, self.right_panel)
-        self.splitter.SetSashPosition(250, True)
-        self.splitter.SetMinimumPaneSize(200)
-
-        #adding splitter to main sizer
-        self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
         self.SetSizer(self.main_sizer)
         self.SetMinSize((800, 500))
+        self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
+        self.main_sizer.Add(self.splitter, 1, wx.EXPAND)
 
-        #creating tree control
+        #creating left panel
+        self.left_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
+        self.left_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
+        left_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.left_panel.SetSizer(left_sizer)
+
+        #adding tree control to left panel
         self.tree = wx.TreeCtrl(self.left_panel, style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
         self.tree_root = self.tree.AddRoot('Hidden Root')
         left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
+
+        #creating right panel
+        self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
+        self.right_panel.SetBackgroundColour("f5f5f5")
+        right_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.right_panel.SetSizer(right_sizer)
+
+        self.splitter.SplitVertically(self.left_panel, self.right_panel)
+        self.splitter.SetSashPosition(250, True)
+        self.splitter.SetMinimumPaneSize(250)
+
+        self.central_panel = wx.Panel(self.right_panel, style=wx.BORDER_NONE)
+        self.central_panel.SetBackgroundColour(wx.Colour(255, 241, 229)) #change to "f5f5f5"
+        central_sizer = wx.BoxSizer(wx.VERTICAL)
+        central_sizer.Add(self.central_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
+        self.right_panel.SetSizer(central_sizer) #set central_sizer to right_panel NOT to central_panel
+
+
+        #self.display_panel = wx.Panel(self.right_panel, style=wx.BORDER_NONE)
+        #display_sizer = wx.BoxSizer(wx.VERTICAL)
+        #self.display_grid = wx.grid.Grid(self.right_panel, -1)
+        #self.display_grid.CreateGrid(5, 5)
+        #self.display_grid.SetDefaultRowSize(5)
+        #self.display_grid.EnableEditing(False)
+        #self.display_grid.EnableGridLines(True)
+        #self.display_grid.EnableDragColSize(True)
+        #self.display_grid.SetRowLabelSize(0)
+        #display_sizer.Add(self.display_grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
+        #self.right_panel.SetSizer(display_sizer)
 
 
     def ClearTree(self):
