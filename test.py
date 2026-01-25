@@ -241,27 +241,26 @@ class MainFrame(wx.Frame):
         self.splitter.SetSashPosition(250, True)
         self.splitter.SetMinimumPaneSize(250)
 
-        self.central_panel = wx.Panel(self.right_panel, style=wx.BORDER_NONE)
-        self.central_panel.SetBackgroundColour(wx.Colour(255, 241, 229)) #change to "f5f5f5"
+        self.central_panel = wx.Panel(self.right_panel, style=wx.BORDER_RAISED)
+        self.central_panel.SetBackgroundColour("f5f5f5") #change to "f5f5f5"
         self.dispay_panel = wx.Panel(self.right_panel, style=wx.BORDER_NONE)
         self.dispay_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
-
         central_sizer = wx.BoxSizer(wx.VERTICAL)
-        central_sizer.Add(self.central_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
-        central_sizer.Add(self.dispay_panel, wx.ID_ANY, wx.EXPAND, wx.ALL, 0)
+        central_sizer.Add(self.central_panel, 4, wx.EXPAND | wx.ALL, 2)
+        central_sizer.Add(self.dispay_panel, 6, wx.EXPAND, wx.ALL, 0)
 
         self.right_panel.SetSizer(central_sizer) #set central_sizer to right_panel NOT to central_panel
 
-        #self.display_grid = wx.grid.Grid(self.right_panel, -1)
-        #self.display_grid.CreateGrid(5, 5)
-        #self.display_grid.SetDefaultRowSize(5)
-        #self.display_grid.EnableEditing(False)
-        #self.display_grid.EnableGridLines(True)
-        #self.display_grid.EnableDragColSize(True)
-        #self.display_grid.SetRowLabelSize(0)
-        #display_sizer = wx.BoxSizer(wx.VERTICAL)
-        #display_sizer.Add(self.display_grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
-        #self.right_panel.SetSizer(display_sizer)
+        self.display_grid = wx.grid.Grid(self.dispay_panel, -1)
+        self.display_grid.CreateGrid(5, 5)
+        self.display_grid.SetDefaultRowSize(5)
+        self.display_grid.EnableEditing(False)
+        self.display_grid.EnableGridLines(True)
+        self.display_grid.EnableDragColSize(True)
+        self.display_grid.SetRowLabelSize(0)
+        display_sizer = wx.BoxSizer(wx.VERTICAL)
+        display_sizer.Add(self.display_grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
+        self.dispay_panel.SetSizer(display_sizer)
 
 
     def ClearTree(self):
