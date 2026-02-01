@@ -4,8 +4,7 @@ import wx.lib.agw.aui as aui
 import wx.adv
 import wx.grid
 import os
-
-#oracledb.init_oracle_client(lib_dir=r"C:\\")
+import pyodbc
 
 #oracle connection dialog window
 class OracleConnectionDialog(wx.Dialog):
@@ -163,6 +162,13 @@ class MainFrame(wx.Frame):
 
         menubar.Append(window_menu, "&Window")
 
+        #--- MS SQL Server ---
+        ms_sql_server = wx.Menu()
+        self.mnu_connect = ms_sql_server.Append(wx.ID_ANY, "Connect")
+        self.mnu_disconnect = ms_sql_server.Append(wx.ID_ANY, "Disconnect")
+
+        menubar.Append(ms_sql_server, "&MS SQL Server")
+
         # --- Help Menu ---
         help_menu = wx.Menu()
         about_item = help_menu.Append(wx.ID_ABOUT, "&About", "Show about dialog")
@@ -191,7 +197,6 @@ class MainFrame(wx.Frame):
         date.SetFont(wx.Font(date.GetFont()).MakeBold())
         toolbar.AddControl(date)
 
-
         #creating date picker
         self.date_ctrl = wx.adv.DatePickerCtrl(toolbar, style=wx.adv.DP_DEFAULT | wx.adv.DP_SHOWCENTURY | wx.BORDER_NONE)
         self.date_ctrl.SetValue(wx.DateTime.Today())
@@ -210,6 +215,22 @@ class MainFrame(wx.Frame):
     def OnSwitchReports(self, event):
         self.current_view = 'Reports'
         self.UpdateTreeView()
+
+    def connect_windows_auth(self):
+        conn_str = (
+            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+            f"SERVER='DESKTOP-0N58KU8';"
+            f"DATABASE='master';"
+            f"Trusted_Connection=yes;"
+        )
+
+        try:
+            self.conn = pyodbc.connect(conn_str)
+            self.current_db = 'master'
+            wx.MessageBox("Connected to database!", "Success", wx.OK | wx.ICON_INFORMATION)
+
+        except Exception as e:
+            wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)
 
 
     def CreateLayout(self):
