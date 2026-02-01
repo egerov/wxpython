@@ -388,7 +388,7 @@ class MainFrame(wx.Frame):
 
             self.current_report = 'lcr_rep'
 
-            sql = "SELECT * FROM students"
+            sql = "SELECT * FROM account"
 
             self.cursor.execute(sql)
             rows = self.cursor.fetchall()
