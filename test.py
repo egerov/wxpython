@@ -379,12 +379,44 @@ class MainFrame(wx.Frame):
             liquidity = self.tree.AppendItem(self.tree_root, 'Liquidity ratios')
             cbr = self.tree.AppendItem(self.tree_root, 'Central Bank')
 
-            self.tree.AppendItem(liquidity, 'Liquidy Current Ratio')
-            self.tree.AppendItem(liquidity, 'Net Stable Funding Ratio')
-
+            lcr = self.tree.AppendItem(liquidity, 'Liquidy Current Ratio')
+            nsfr = self.tree.AppendItem(liquidity, 'Net Stable Funding Ratio')
             self.tree.AppendItem(cbr, 'Weighted average rates')
 
             self.tree.ExpandAll()
+            self.tree.SelectItem(lcr)
+
+            self.current_report = 'lcr_rep'
+
+            sql = "SELECT * FROM students"
+
+            self.cursor.execute(sql)
+            rows = self.cursor.fetchall()
+            columns = [desc[0] for desc in self.cursor.description]     #column names
+
+            #clear display grid
+            self.display_grid.ClearGrid()
+            if self.display_grid.GetNumberRows() > 0:
+                self.display_grid.DeleteRows(0, self.display_grid.GetNumberRows())
+            if self.display_grid.GetNumberCols() > 0:
+                self.display_grid.DeleteCols(0, self.display_grid.GetNumberCols())
+
+            #setting new structure
+            self.display_grid.AppendCols(len(columns))
+            self.display_grid.AppendRows(len(rows))
+
+            #headers
+            for col, name in enumerate(columns):
+                self.display_grid.SetColLabelValue(col, name.upper().replace("_", " "))
+
+            #filling data
+            for row_idx, row in enumerate(rows):
+                for col_idx, value in enumerate(row):
+                    self.display_grid.SetCellValue(row_idx, col_idx, str(value) if value is not None else "")
+
+            #auto-sizing columns
+            self.display_grid.AutoSize()
+
 
     def OnDateChanged(self, event):
         dt = event.GetDate().Format("%Y-%m-%d")
