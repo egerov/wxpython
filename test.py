@@ -108,6 +108,8 @@ class MainFrame(wx.Frame):
         self.CreateMenu()
         self.CreateTools()
         self.CreateLayout()
+        self.CreateStatusBar()
+        self.SetStatusText("Not connected to SQL Server")
 
         #defining default view
         self.current_view = 'Accounting'
@@ -179,6 +181,7 @@ class MainFrame(wx.Frame):
         self.SetMenuBar(menubar)
         self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
         self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
+        self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect)
 
 
     def CreateTools(self):
@@ -216,11 +219,15 @@ class MainFrame(wx.Frame):
         self.current_view = 'Reports'
         self.UpdateTreeView()
 
-    def connect_windows_auth(self):
+    def ConnectWindowsAuth(self):
+
+        SERVER_NAME = 'DESKTOP-0N58KU8'
+        DATABASE_NAME = 'master'
+
         conn_str = (
             f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-            f"SERVER='DESKTOP-0N58KU8';"
-            f"DATABASE='master';"
+            f"SERVER={SERVER_NAME};"
+            f"DATABASE={DATABASE_NAME};"
             f"Trusted_Connection=yes;"
         )
 
