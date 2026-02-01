@@ -111,6 +111,9 @@ class MainFrame(wx.Frame):
         self.CreateStatusBar()
         self.SetStatusText("Not connected to SQL Server")
 
+        self.conn = None
+        self.cursor = None
+
         #defining default view
         self.current_view = 'Accounting'
 
@@ -219,7 +222,11 @@ class MainFrame(wx.Frame):
         self.current_view = 'Reports'
         self.UpdateTreeView()
 
-    def ConnectWindowsAuth(self):
+    def ConnectWindowsAuth(self, event):
+
+        if self.conn is not None:
+            wx.MessageBox("Already connected to SQL Server", 'Info', wx.OK | wx.ICON_INFORMATION)
+            return
 
         SERVER_NAME = 'DESKTOP-0N58KU8'
         DATABASE_NAME = 'master'
@@ -232,11 +239,21 @@ class MainFrame(wx.Frame):
         )
 
         try:
-            self.conn = pyodbc.connect(conn_str)
-            self.current_db = 'master'
-            wx.MessageBox("Connected to database!", "Success", wx.OK | wx.ICON_INFORMATION)
+            self.conn = pyodbc.connect(conn_str, timeout=8)
+            self.cursor = self.conn.cursor()
 
-        except Exception as e:
+            self.SetStatusText(f"Connected to {SERVER_NAME} {DATABASE_NAME}")
+            wx.MessageBox(
+                f"Successfully connected to SQL Server",
+                "Connection OK",
+                wx.OK | wx.ICON_INFORMATION
+            )
+
+        except pyodbc.Error as ex:
+            error_msg = f"Connection failed!\n\n{str(ex)}"
+            self.SetStatusText("Connection failed")
+            wx.MessageBox(error_msg, "Connection Error", wx.OK | wx.ICON_ERROR)
+
             wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)
 
 
