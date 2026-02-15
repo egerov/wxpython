@@ -332,7 +332,7 @@ class MainFrame(wx.Frame):
         self.display_grid.EnableGridLines(True)
         self.display_grid.EnableDragColSize(True)
         self.display_grid.SetRowLabelSize(0)
-        self.display_grid.SetColLabelSize(0)
+        self.display_grid.SetColLabelSize(20)
         display_sizer = wx.BoxSizer(wx.VERTICAL)
         display_sizer.Add(self.display_grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
 
