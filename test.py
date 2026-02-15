@@ -376,7 +376,7 @@ class MainFrame(wx.Frame):
             liquidity = self.tree.AppendItem(self.tree_root, 'Liquidity ratios')
             cbr = self.tree.AppendItem(self.tree_root, 'Central Bank')
 
-            lcr = self.tree.AppendItem(liquidity, 'Liquidy Current Ratio')
+            lcr = self.tree.AppendItem(liquidity, 'Liquidity Coverage Ratio')
             nsfr = self.tree.AppendItem(liquidity, 'Net Stable Funding Ratio')
             self.tree.AppendItem(cbr, 'Weighted average rates')
 
@@ -385,36 +385,39 @@ class MainFrame(wx.Frame):
 
             self.current_report = 'lcr_rep'
 
-            sql = "SELECT * FROM account"
+            #sql = "SELECT * FROM account"
 
-            self.cursor.execute(sql)
-            rows = self.cursor.fetchall()
-            columns = [desc[0] for desc in self.cursor.description]     #column names
+            #self.cursor.execute(sql)
+            #rows = self.cursor.fetchall()
+            #columns = [desc[0] for desc in self.cursor.description]     #column names
 
             #clear display grid
-            self.display_grid.ClearGrid()
-            if self.display_grid.GetNumberRows() > 0:
-                self.display_grid.DeleteRows(0, self.display_grid.GetNumberRows())
-            if self.display_grid.GetNumberCols() > 0:
-                self.display_grid.DeleteCols(0, self.display_grid.GetNumberCols())
+            #self.display_grid.ClearGrid()
+            #if self.display_grid.GetNumberRows() > 0:
+                #self.display_grid.DeleteRows(0, self.display_grid.GetNumberRows())
+            #if self.display_grid.GetNumberCols() > 0:
+                #self.display_grid.DeleteCols(0, self.display_grid.GetNumberCols())
 
             #setting new structure
-            self.display_grid.AppendCols(len(columns))
-            self.display_grid.AppendRows(len(rows))
+            #self.display_grid.AppendCols(len(columns))
+            #self.display_grid.AppendRows(len(rows))
 
             #headers
-            for col, name in enumerate(columns):
-                self.display_grid.SetColLabelValue(col, name.upper().replace("_", " "))
+            #for col, name in enumerate(columns):
+                #self.display_grid.SetColLabelValue(col, name.upper().replace("_", " "))
 
             #filling data
-            for row_idx, row in enumerate(rows):
-                for col_idx, value in enumerate(row):
-                    self.display_grid.SetCellValue(row_idx, col_idx, str(value) if value is not None else "")
+            #for row_idx, row in enumerate(rows):
+                #for col_idx, value in enumerate(row):
+                    #self.display_grid.SetCellValue(row_idx, col_idx, str(value) if value is not None else "")
 
             #auto-sizing columns
-            self.display_grid.AutoSize()
+            #self.display_grid.AutoSize()
 
     def OnDateChanged(self, event):
+        if self.current_view == 'Reports' and hasattr(self, 'current_report'):
+            self.CreateReport(self.current_report)
+
         dt = event.GetDate().Format("%Y-%m-%d")
         print(dt)
 
@@ -428,6 +431,104 @@ class MainFrame(wx.Frame):
         if self.current_view == 'Reports':
             self.HandleReportSelection(text)
             #later add elif self.current_view == 'Accounting': --to react to item selection in accounting view
+
+    def HandleReportSelection(self, report_name):
+
+        #mapping displayed names to internal report keys
+        report_map = {
+            'Liquidity Coverage Ratio': 'lcr',
+            'Net Stable Funding Ratio': 'nsfr',
+            'Weighted average rates': 'weighted_rates'
+            #More reports to be added here
+        }
+
+        key = report_map.get(report_name)
+        if key:
+            self.current_report = key
+            self.CreateReport(key, title=report_name)
+            self.SetStatusText(f"Report: {report_name}")
+            return
+
+
+    def CreateReport(self, report_key, title='Report'):
+        if self.cursor is None:
+            self.ShowMessage("Not connected to database", "Warning")
+            self.ClearGrid()
+            return
+
+        #removing old data and structure
+        self.ClearGrid()
+
+        try:
+            if report_key == 'lcr':
+                sql = "SELECT * FROM students"
+                #params = (self.GetReportDateISO(),)
+                columns = ['Student ID', 'Name', 'Major']
+
+            elif report_key == 'nsfr':
+                sql = "SELECT * FROM articles"
+                #params = (self.GetReportDateISO(),)
+                columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Article Level']
+
+            elif report_key == 'weighted_rates':
+                sql = "SELECT * FROM account"
+                #params = (self.GetReportDateISO(),)
+                columns = ['Date', 'Description', 'Currency', 'Amount', 'Category', 'Type']
+
+            else:
+                self.display_grid.AppendRows(1)
+                self.display_grid.SetCellValue(0, 0, f"Report '{report_key}' not implemented yet")
+                return
+
+            #executing query
+            self.cursor.execute(sql) #deleted params attribute
+            rows = self.cursor.fetchall()
+            if not rows:
+                self.display_grid.AppendRows(1)
+                self.display_grid.SetCellValue(0, 0, "No data for selected date")
+
+            #column names from cursor or from our predefined list
+            if columns:
+                col_names = columns
+            else:
+                col_names = [desc[0].upper().replace("_", " ") for desc in self.cursor.description]
+
+            #setting up grid structure
+            self.display_grid.AppendCols(len(col_names))
+            for i, name in enumerate(col_names):
+                self.display_grid.SetColLabelValue(i, name)
+
+            self.display_grid.AppendRows(len(rows))
+
+            #filling data
+            for r, row in enumerate(rows):
+                for c, value in enumerate(row):
+                    display_value = f"{value:.2f}" if isinstance(value, (int, float)) else str(value or "")
+                    self.display_grid.SetCellValue(r, c, display_value)
+
+            #formatting and usability
+            self.display_grid.AutoSizeColumns()
+            self.display_grid.SetColLabelSize(24)
+            self.display_grid.SetRowLabelSize(0)
+            self.display_grid.EnableEditing(False)
+
+        except Exception as e:
+            self.ShowMessage(f"Error loading report:\n{str(e)}", "Database Error")
+            self.ClearGrid()
+
+    def ClearGrid(self):
+        if self.display_grid.GetNumberRows() > 0:
+                self.display_grid.DeleteRows(0, self.display_grid.GetNumberRows())
+        if self.display_grid.GetNumberCols() > 0:
+                self.display_grid.DeleteCols(0, self.display_grid.GetNumberCols())
+
+    def GetReportDateISO(self):
+        #converting wx.DatePickerCtrl value to 'YYYY-MM-DD' string
+        wxdt = self.date_ctrl.GetValue()
+        return f"{wxdt.GetYear():04d}-{wxdt.GetMonth()+1:02d}-{wxdt.GetDay():02d}"
+
+    def ShowMessage(self, msg, title = "Information"):
+        wx.MessageBox(msg, title, wx.OK | wx.ICON_INFORMATION)
 
 
 def start_app():
