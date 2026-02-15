@@ -383,36 +383,7 @@ class MainFrame(wx.Frame):
             self.tree.ExpandAll()
             self.tree.SelectItem(lcr)
 
-            self.current_report = 'lcr_rep'
-
-            #sql = "SELECT * FROM account"
-
-            #self.cursor.execute(sql)
-            #rows = self.cursor.fetchall()
-            #columns = [desc[0] for desc in self.cursor.description]     #column names
-
-            #clear display grid
-            #self.display_grid.ClearGrid()
-            #if self.display_grid.GetNumberRows() > 0:
-                #self.display_grid.DeleteRows(0, self.display_grid.GetNumberRows())
-            #if self.display_grid.GetNumberCols() > 0:
-                #self.display_grid.DeleteCols(0, self.display_grid.GetNumberCols())
-
-            #setting new structure
-            #self.display_grid.AppendCols(len(columns))
-            #self.display_grid.AppendRows(len(rows))
-
-            #headers
-            #for col, name in enumerate(columns):
-                #self.display_grid.SetColLabelValue(col, name.upper().replace("_", " "))
-
-            #filling data
-            #for row_idx, row in enumerate(rows):
-                #for col_idx, value in enumerate(row):
-                    #self.display_grid.SetCellValue(row_idx, col_idx, str(value) if value is not None else "")
-
-            #auto-sizing columns
-            #self.display_grid.AutoSize()
+            #self.current_report = 'lcr_rep'
 
     def OnDateChanged(self, event):
         if self.current_view == 'Reports' and hasattr(self, 'current_report'):
@@ -466,9 +437,9 @@ class MainFrame(wx.Frame):
                 columns = ['Student ID', 'Name', 'Major']
 
             elif report_key == 'nsfr':
-                sql = "SELECT * FROM articles"
+                sql = "SELECT * FROM Articles"
                 #params = (self.GetReportDateISO(),)
-                columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Article Level']
+                columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Balance Sheet Side' 'Article Level']
 
             elif report_key == 'weighted_rates':
                 sql = "SELECT * FROM account"
@@ -507,7 +478,7 @@ class MainFrame(wx.Frame):
                     self.display_grid.SetCellValue(r, c, display_value)
 
             #formatting and usability
-            self.display_grid.AutoSizeColumns()
+            self.display_grid.AutoSize()
             self.display_grid.SetColLabelSize(24)
             self.display_grid.SetRowLabelSize(0)
             self.display_grid.EnableEditing(False)
