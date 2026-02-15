@@ -118,12 +118,9 @@ class MainFrame(wx.Frame):
 
         #defining default view
         self.current_view = 'Accounting'
-
-        self.UpdateTreeView()
-
+        self.UpdateView()
         self.Centre()
         self.Show()
-
 
     def CreateMenu(self):
 
@@ -189,7 +186,6 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect)
         self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect)
 
-
     def CreateTools(self):
 
         #creating toolbar
@@ -215,15 +211,14 @@ class MainFrame(wx.Frame):
 
         toolbar.Realize()
 
-
     #menu handlers
     def OnSwitchAccounting(self, event):
         self.current_view = 'Accounting'
-        self.UpdateTreeView()
+        self.UpdateView()
 
     def OnSwitchReports(self, event):
         self.current_view = 'Reports'
-        self.UpdateTreeView()
+        self.UpdateView()
 
     #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
@@ -305,6 +300,8 @@ class MainFrame(wx.Frame):
         self.tree_root = self.tree.AddRoot('Hidden Root')
         left_sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 0)
 
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelChanged)
+
         #creating right panel
         self.right_panel = wx.Panel(self.splitter, style=wx.BORDER_RAISED)
         self.right_panel.SetBackgroundColour("f5f5f5")
@@ -341,7 +338,7 @@ class MainFrame(wx.Frame):
     def ClearTree(self):
         self.tree.DeleteChildren(self.tree_root)
 
-    def UpdateTreeView(self):
+    def UpdateView(self):
         self.ClearTree()
 
         if self.current_view == 'Accounting':
@@ -417,10 +414,20 @@ class MainFrame(wx.Frame):
             #auto-sizing columns
             self.display_grid.AutoSize()
 
-
     def OnDateChanged(self, event):
         dt = event.GetDate().Format("%Y-%m-%d")
         print(dt)
+
+    def OnTreeSelChanged(self, event):
+        item = event.GetItem()
+        if not item.IsOk():
+            return
+
+        text = self.tree.GetItemText(item).strip()
+
+        if self.current_view == 'Reports':
+            self.HandleReportSelection(text)
+            #later add elif self.current_view == 'Accounting': --to react to item selection in accounting view
 
 
 def start_app():
