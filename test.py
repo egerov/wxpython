@@ -442,9 +442,10 @@ class MainFrame(wx.Frame):
                 columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Balance Sheet Side', 'Article Level']
 
             elif report_key == 'weighted_rates':
-                sql = "SELECT * FROM account WHERE transact_date = '07.01.2024'"
-                #params = (self.GetReportDateISO(),)
+                sql = "SELECT * FROM account WHERE transact_date > ?"
+                params = (self.GetReportDateISO(),)
                 columns = ['Date', 'Description', 'Currency', 'Amount', 'Category', 'Type']
+                print("weighted rates script OK")
 
             else:
                 self.display_grid.AppendRows(1)
@@ -452,11 +453,13 @@ class MainFrame(wx.Frame):
                 return
 
             #executing query
-            self.cursor.execute(sql) #deleted params attribute
+            self.cursor.execute(sql, params) #params deleted
             rows = self.cursor.fetchall()
+
             if not rows:
-                self.display_grid.AppendRows(1)
-                self.display_grid.SetCellValue(0, 0, "No data for selected date")
+                print("no rows")
+                #self.display_grid.AppendRows(1)
+                #self.display_grid.SetCellValue(0, 0, "No data for selected date")
 
             #column names from cursor or from our predefined list
             if columns:
@@ -464,12 +467,17 @@ class MainFrame(wx.Frame):
             else:
                 col_names = [desc[0].upper().replace("_", " ") for desc in self.cursor.description]
 
+
+
             #setting up grid structure
             self.display_grid.AppendCols(len(col_names))
             for i, name in enumerate(col_names):
                 self.display_grid.SetColLabelValue(i, name)
 
             self.display_grid.AppendRows(len(rows))
+
+            print("Grid structure set successfully")
+
 
             #filling data
             for r, row in enumerate(rows):
@@ -495,8 +503,8 @@ class MainFrame(wx.Frame):
 
     def GetReportDateISO(self):
         #converting wx.DatePickerCtrl value to 'YYYY-MM-DD' string
-        wxdt = self.date_ctrl.GetValue()
-        return f"{wxdt.GetYear():04d}-{wxdt.GetMonth()+1:02d}-{wxdt.GetDay():02d}"
+        dt_rep = self.date_ctrl.GetValue()
+        return f"{dt_rep.GetDay():02d}-{dt_rep.GetMonth()+1:02d}-{dt_rep.GetYear():04d}"
 
     def ShowMessage(self, msg, title = "Information"):
         wx.MessageBox(msg, title, wx.OK | wx.ICON_INFORMATION)
