@@ -439,10 +439,10 @@ class MainFrame(wx.Frame):
             elif report_key == 'nsfr':
                 sql = "SELECT * FROM Articles"
                 #params = (self.GetReportDateISO(),)
-                columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Balance Sheet Side' 'Article Level']
+                columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Balance Sheet Side', 'Article Level']
 
             elif report_key == 'weighted_rates':
-                sql = "SELECT * FROM account"
+                sql = "SELECT * FROM account WHERE transact_date = '07.01.2024'"
                 #params = (self.GetReportDateISO(),)
                 columns = ['Date', 'Description', 'Currency', 'Amount', 'Category', 'Type']
 
