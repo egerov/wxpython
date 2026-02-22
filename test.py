@@ -152,6 +152,7 @@ class MainFrame(wx.Frame):
         navigate_menu = wx.Menu()
         self.mnu_accounting = navigate_menu.Append(wx.ID_ANY, "&Accounting\tCtrl+A", "Accounting")
         self.mnu_reports = navigate_menu.Append(wx.ID_ANY, "&Reports\tCtrl+R", "Reports")
+        self.mnu_views = navigate_menu.Append(wx.ID_ANY, "&Views\tCtrl+T", "Views")
 
         menubar.Append(navigate_menu, "&Navigate")
 
@@ -184,6 +185,7 @@ class MainFrame(wx.Frame):
         self.SetMenuBar(menubar)
         self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
         self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
+        self.Bind(wx.EVT_MENU, self.OnSwitchViews, self.mnu_views)
         self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect)
         self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect)
 
@@ -221,6 +223,10 @@ class MainFrame(wx.Frame):
 
     def OnSwitchReports(self, event):
         self.current_view = 'Reports'
+        self.UpdateView()
+
+    def OnSwitchViews(self, event):
+        self.current_view = 'Views'
         self.UpdateView()
 
     #connection to MS SQL Server with Windows Authentication
@@ -385,6 +391,34 @@ class MainFrame(wx.Frame):
 
             self.tree.ExpandAll()
             self.tree.SelectItem(lcr)
+
+        elif self.current_view == 'Views':
+            #populating view tree
+            accounting = self.tree.AppendItem(self.tree_root, 'Accounting')
+            sib = self.tree.AppendItem(self.tree_root, 'SIB')
+
+            self.tree.AppendItem(accounting, 'Con_saldo')
+            self.tree.AppendItem(accounting, 'Clients')
+            self.tree.AppendItem(accounting, 'Contracts')
+
+            lcr = self.tree.AppendItem(sib, 'LCR')
+            self.tree.AppendItem(lcr, 'Due from banks')
+            self.tree.AppendItem(lcr, 'Due to banks')
+            self.tree.AppendItem(lcr, 'REPO')
+            self.tree.AppendItem(lcr, 'Securities')
+            self.tree.AppendItem(lcr, 'Due to individuals')
+            self.tree.AppendItem(lcr, 'Due to customers')
+            self.tree.AppendItem(lcr, 'Due from individuals')
+            self.tree.AppendItem(lcr, 'Obligatory expenses')
+            self.tree.AppendItem(lcr, 'Securities issued')
+
+            nsfr = self.tree.AppendItem(sib, 'NSFR')
+            self.tree.AppendItem(nsfr, 'Due to individuals')
+            self.tree.AppendItem(nsfr, 'Due to customers')
+
+            self.tree.ExpandAll()
+            self.tree.SelectItem(lcr)
+
 
     def OnCreateReport(self, event):
         if self.current_view == 'Reports' and hasattr(self, 'current_report'):
