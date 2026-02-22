@@ -5,6 +5,7 @@ import wx.adv
 import wx.grid
 import os
 import pyodbc
+from datetime import date
 
 #oracle connection dialog window
 class OracleConnectionDialog(wx.Dialog):
@@ -442,9 +443,12 @@ class MainFrame(wx.Frame):
                 columns = ['Article UID', 'Parent Article UID', 'Article Code', 'Article Name', 'Article Sort Order', 'Balance Sheet Side', 'Article Level']
 
             elif report_key == 'weighted_rates':
-                sql = "SELECT * FROM account WHERE transact_date > ?"
+                sql = """
+                SELECT * FROM sales
+                WHERE DT_REP > '2026-01-31'
+                """
                 params = (self.GetReportDateISO(),)
-                columns = ['Date', 'Description', 'Currency', 'Amount', 'Category', 'Type']
+                columns = ['Date', 'Description', 'Currency']
                 print("weighted rates script OK")
 
             else:
@@ -453,7 +457,7 @@ class MainFrame(wx.Frame):
                 return
 
             #executing query
-            self.cursor.execute(sql, params) #params deleted
+            self.cursor.execute(sql) #params deleted
             rows = self.cursor.fetchall()
 
             if not rows:
@@ -504,7 +508,11 @@ class MainFrame(wx.Frame):
     def GetReportDateISO(self):
         #converting wx.DatePickerCtrl value to 'YYYY-MM-DD' string
         dt_rep = self.date_ctrl.GetValue()
-        return f"{dt_rep.GetDay():02d}-{dt_rep.GetMonth()+1:02d}-{dt_rep.GetYear():04d}"
+        #dt_rep = date(dt_rep.GetDay(), dt_rep.GetMonth() + 1, dt_rep.GetYear())
+        print("Grabbed report date is:")
+        print(dt_rep)
+        return dt_rep
+        #return f"{dt_rep.GetDay():02d}-{dt_rep.GetMonth()+1:02d}-{dt_rep.GetYear():04d}"
 
     def ShowMessage(self, msg, title = "Information"):
         wx.MessageBox(msg, title, wx.OK | wx.ICON_INFORMATION)
