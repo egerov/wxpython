@@ -193,10 +193,11 @@ class MainFrame(wx.Frame):
         toolbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.NO_BORDER)
         accounting = toolbar.AddTool(wx.ID_ANY, 'Accounting', load_icon('1.png'), 'Accounting')
         reporting = toolbar.AddTool(wx.ID_ANY, 'Reporting', load_icon('2.png'), 'Reporting')
-        excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Excel')
+        excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Export to Excel')
         open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
-        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('6.png'), 'Database')
+        database = toolbar.AddTool(wx.ID_EXECUTE, 'Create report', load_icon('6.png'), 'Create report')
+        create_report = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('7.png'), 'Database')
         toolbar.AddSeparator()
 
         date = wx.StaticText(toolbar, label='Report date: ')
@@ -208,7 +209,8 @@ class MainFrame(wx.Frame):
         self.date_ctrl.SetValue(wx.DateTime.Today())
         toolbar.AddControl(self.date_ctrl)
 
-        self.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChanged, self.date_ctrl)
+        #self.Bind(wx.adv.EVT_DATE_CHANGED, self.OnDateChanged, self.date_ctrl)
+        self.Bind(wx.EVT_TOOL, self.OnCreateReport, id = wx.ID_EXECUTE)
 
         toolbar.Realize()
 
@@ -384,14 +386,9 @@ class MainFrame(wx.Frame):
             self.tree.ExpandAll()
             self.tree.SelectItem(lcr)
 
-            #self.current_report = 'lcr_rep'
-
-    def OnDateChanged(self, event):
+    def OnCreateReport(self, event):
         if self.current_view == 'Reports' and hasattr(self, 'current_report'):
             self.CreateReport(self.current_report)
-
-        dt = event.GetDate().Format("%Y-%m-%d")
-        print(dt)
 
     def OnTreeSelChanged(self, event):
         item = event.GetItem()
@@ -457,7 +454,7 @@ class MainFrame(wx.Frame):
                 return
 
             #executing query
-            self.cursor.execute(sql, params) #params deleted
+            self.cursor.execute(sql, params)
             rows = self.cursor.fetchall()
 
             if not rows:
@@ -511,16 +508,7 @@ class MainFrame(wx.Frame):
         year = dt_rep.GetYear()
         month = dt_rep.GetMonth() + 1
         day = dt_rep.GetDay()
-        #dt_rep = date(dt_rep.GetDay(), dt_rep.GetMonth() + 1, dt_rep.GetYear())
         dt_rep = date(year, month, day)
-        print(dt_rep)
-        print("Grabbed year is:")
-        print(year)
-        print("Grabbed month is:")
-        print(month)
-        print("Grabbed dat is:")
-        print(day)
-        print(dt_rep)
         return dt_rep
         #return f"{dt_rep.GetDay():02d}-{dt_rep.GetMonth()+1:02d}-{dt_rep.GetYear():04d}"
 
