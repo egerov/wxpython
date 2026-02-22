@@ -445,10 +445,10 @@ class MainFrame(wx.Frame):
             elif report_key == 'weighted_rates':
                 sql = """
                 SELECT * FROM sales
-                WHERE DT_REP > '2026-01-31'
+                WHERE DT_REP > ?
                 """
                 params = (self.GetReportDateISO(),)
-                columns = ['Date', 'Description', 'Currency']
+                columns = ['Date', 'Item', 'Amount']
                 print("weighted rates script OK")
 
             else:
@@ -457,7 +457,7 @@ class MainFrame(wx.Frame):
                 return
 
             #executing query
-            self.cursor.execute(sql) #params deleted
+            self.cursor.execute(sql, params) #params deleted
             rows = self.cursor.fetchall()
 
             if not rows:
@@ -508,8 +508,18 @@ class MainFrame(wx.Frame):
     def GetReportDateISO(self):
         #converting wx.DatePickerCtrl value to 'YYYY-MM-DD' string
         dt_rep = self.date_ctrl.GetValue()
+        year = dt_rep.GetYear()
+        month = dt_rep.GetMonth() + 1
+        day = dt_rep.GetDay()
         #dt_rep = date(dt_rep.GetDay(), dt_rep.GetMonth() + 1, dt_rep.GetYear())
-        print("Grabbed report date is:")
+        dt_rep = date(year, month, day)
+        print(dt_rep)
+        print("Grabbed year is:")
+        print(year)
+        print("Grabbed month is:")
+        print(month)
+        print("Grabbed dat is:")
+        print(day)
         print(dt_rep)
         return dt_rep
         #return f"{dt_rep.GetDay():02d}-{dt_rep.GetMonth()+1:02d}-{dt_rep.GetYear():04d}"
