@@ -101,6 +101,46 @@ class OracleConnectionDialog(wx.Dialog):
             self.btn_test.Enable(True)
             self.Layout()
 
+#Oracle connection dialogue window (second version)
+class OracleConnectDialog(wx.Dialog):
+    def __init__(self, parent):
+        super().__init__(parent, title="Oracle Database Login", size=(450, 420))        #change window size if needed
+
+        panel = wx.Panel(self)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Username
+        main_sizer.Add(wx.StaticText(panel, label="Username:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
+        self.txt_user = wx.TextCtrl(panel)
+        self.txt_user.SetValue('gerov_evgeniy[LAB_BUH]')
+        main_sizer.Add(self.txt_user, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
+
+        # Password
+        main_sizer.Add(wx.StaticText(panel, label="Password:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
+        self.txt_pass = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
+        main_sizer.Add(self.txt_pass, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
+
+        # Buttons
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.btn_test = wx.Button(panel, label="Connect")
+        self.btn_test.Bind(wx.EVT_BUTTON, self.OnConnect)
+        btn_sizer.Add(self.btn_test, flag=wx.RIGHT, border=10)
+
+        btn_close = wx.Button(panel, label="Close")
+        btn_close.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.ID_CANCEL))
+        btn_sizer.Add(btn_close)
+
+        main_sizer.Add(btn_sizer, flag=wx.ALIGN_CENTER | wx.ALL, border=20)
+
+        panel.SetSizer(main_sizer)
+        self.Layout()
+        self.Centre()
+
+    def OnConnect(self, event):
+        print("Login parameters grabbed")
+
+
 #creating main window
 class MainFrame(wx.Frame):
     def __init__(self, parent=None, title="Financial Reporter"):
@@ -194,6 +234,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
         self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
         self.Bind(wx.EVT_MENU, self.OnSwitchViews, self.mnu_views)
+        self.Bind(wx.EVT_MENU, self.OnConnectToOracle, self.mnu_connect)
         self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect2)
         self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect2)
 
@@ -236,6 +277,13 @@ class MainFrame(wx.Frame):
     def OnSwitchViews(self, event):
         self.current_view = 'Views'
         self.UpdateView()
+
+    #connection to Oracle Database from MainFrame
+    def OnConnectToOracle(self, event):
+        print("Connection to Oracle initiated")
+
+        dlg = OracleConnectDialog(self)
+        dlg.Show()
 
     #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
@@ -458,7 +506,6 @@ class MainFrame(wx.Frame):
             self.CreateReport(key, title=report_name)
             self.SetStatusText(f"Report: {report_name}")
             return
-
 
     def CreateReport(self, report_key, title='Report'):
         if self.cursor is None:
