@@ -468,8 +468,8 @@ class MainFrame(wx.Frame):
                 WHERE 1=1
                 AND DT_REP = ?
                 """
-                #params = (self.GetReportDateISO(),)
-                columns = ['Student ID', 'Name', 'Major']
+                params = (self.GetReportDateISO(),)
+                #columns = ['Student ID', 'Name', 'Major']
 
             elif report_key == 'nsfr':
                 sql = "SELECT * FROM Articles"
