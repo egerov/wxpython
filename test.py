@@ -401,7 +401,7 @@ class MainFrame(wx.Frame):
             self.tree.AppendItem(accounting, 'Clients')
             self.tree.AppendItem(accounting, 'Contracts')
 
-            lcr = self.tree.AppendItem(sib, 'LCR')
+            lcr = self.tree.AppendItem(sib, 'Liquidity Coverage Ratio')
             self.tree.AppendItem(lcr, 'Due from banks')
             self.tree.AppendItem(lcr, 'Due to banks')
             self.tree.AppendItem(lcr, 'REPO')
@@ -412,7 +412,7 @@ class MainFrame(wx.Frame):
             self.tree.AppendItem(lcr, 'Obligatory expenses')
             self.tree.AppendItem(lcr, 'Securities issued')
 
-            nsfr = self.tree.AppendItem(sib, 'NSFR')
+            nsfr = self.tree.AppendItem(sib, 'Net Stable Funding Ratio')
             self.tree.AppendItem(nsfr, 'Due to individuals')
             self.tree.AppendItem(nsfr, 'Due to customers')
 
@@ -479,7 +479,7 @@ class MainFrame(wx.Frame):
                 WHERE DT_REP > ?
                 """
                 params = (self.GetReportDateISO(),)
-                columns = ['Date', 'Item', 'Amount']
+                columns = ['DATE', 'ITEM', 'AMOUNT']
                 print("weighted rates script OK")
 
             else:
