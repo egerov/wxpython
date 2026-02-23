@@ -114,6 +114,7 @@ class MainFrame(wx.Frame):
 
         #initially only connect option enabled
         self.mnu_disconnect.Enable(False)
+        self.mnu_disconnect2.Enable(False)
         self.conn = None
         self.cursor = None
 
@@ -168,10 +169,17 @@ class MainFrame(wx.Frame):
 
         menubar.Append(window_menu, "&Window")
 
+        #--- Oracle ---
+        oracle = wx.Menu()
+        self.mnu_connect = oracle.Append(wx.ID_ANY, 'Connect')
+        self.mnu_disconnect = oracle.Append(wx.ID_ANY, 'Disconnect')
+
+        menubar.Append(oracle, '&Oracle')
+
         #--- MS SQL Server ---
         ms_sql_server = wx.Menu()
-        self.mnu_connect = ms_sql_server.Append(wx.ID_ANY, "Connect")
-        self.mnu_disconnect = ms_sql_server.Append(wx.ID_ANY, "Disconnect")
+        self.mnu_connect2 = ms_sql_server.Append(wx.ID_ANY, 'Connect')
+        self.mnu_disconnect2 = ms_sql_server.Append(wx.ID_ANY, 'Disconnect')
 
         menubar.Append(ms_sql_server, "&SQL Server")
 
@@ -186,8 +194,8 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSwitchAccounting, self.mnu_accounting)
         self.Bind(wx.EVT_MENU, self.OnSwitchReports, self.mnu_reports)
         self.Bind(wx.EVT_MENU, self.OnSwitchViews, self.mnu_views)
-        self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect)
-        self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect)
+        self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect2)
+        self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect2)
 
     def CreateTools(self):
 
@@ -251,8 +259,8 @@ class MainFrame(wx.Frame):
             self.cursor = self.conn.cursor()
 
             self.SetStatusText(f"Connected to {SERVER_NAME} {DATABASE_NAME}")
-            self.mnu_connect.Enable(False)
-            self.mnu_disconnect.Enable(True)
+            self.mnu_connect2.Enable(False)
+            self.mnu_disconnect2.Enable(True)
 
             wx.MessageBox(
                 f"Successfully connected to SQL Server",
@@ -282,8 +290,8 @@ class MainFrame(wx.Frame):
             self.cursor = None
 
             self.SetStatusText("Disconnected from SQL Server")
-            self.mnu_connect.Enable(True)
-            self.mnu_disconnect.Enable(False)
+            self.mnu_connect2.Enable(True)
+            self.mnu_disconnect2.Enable(False)
 
             wx.MessageBox("Disconnected successfully", 'Info', wx.OK | wx.ICON_INFORMATION)
 
