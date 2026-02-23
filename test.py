@@ -419,7 +419,6 @@ class MainFrame(wx.Frame):
             self.tree.ExpandAll()
             self.tree.SelectItem(lcr)
 
-
     def OnCreateReport(self, event):
         if self.current_view == 'Reports' and hasattr(self, 'current_report'):
             self.CreateReport(self.current_report)
@@ -431,7 +430,7 @@ class MainFrame(wx.Frame):
 
         text = self.tree.GetItemText(item).strip()
 
-        if self.current_view == 'Reports':
+        if self.current_view != 'Accounting':
             self.HandleReportSelection(text)
             #later add elif self.current_view == 'Accounting': --to react to item selection in accounting view
 
@@ -464,7 +463,11 @@ class MainFrame(wx.Frame):
 
         try:
             if report_key == 'lcr':
-                sql = "SELECT * FROM students"
+                sql = """
+                SELECT * FROM dm_ras.ras_ambk_lcr
+                WHERE 1=1
+                AND DT_REP = ?
+                """
                 #params = (self.GetReportDateISO(),)
                 columns = ['Student ID', 'Name', 'Major']
 
