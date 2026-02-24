@@ -104,7 +104,7 @@ class OracleConnectionDialog(wx.Dialog):
 #Oracle connection dialogue window (second version)
 class OracleConnectDialog(wx.Dialog):
     def __init__(self, parent):
-        super().__init__(parent, title="Oracle Database Login", size=(450, 420))        #change window size if needed
+        super().__init__(parent, title="Oracle Database Login", size=(300, 200))
 
         panel = wx.Panel(self)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -580,7 +580,8 @@ class MainFrame(wx.Frame):
 
             #formatting and usability
             self.display_grid.AutoSize()
-            self.display_grid.SetColLabelSize(24)
+            #self.display_grid.SetDefaultRowSize(17)
+            self.display_grid.SetColLabelSize(19)
             self.display_grid.SetRowLabelSize(0)
             self.display_grid.EnableEditing(False)
 
