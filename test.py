@@ -123,8 +123,7 @@ class OracleConnectDialog(wx.Dialog):
         # Buttons
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_cnct = wx.Button(panel, label="Connect")
-        self.btn_cnct.Bind(wx.EVT_BUTTON, self.GetConnectionParameters)
+        self.btn_cnct = wx.Button(panel, label='Connect', id=wx.ID_OK)
         btn_sizer.Add(self.btn_cnct, flag=wx.RIGHT, border=10)
 
         btn_close = wx.Button(panel, label="Close")
@@ -137,22 +136,11 @@ class OracleConnectDialog(wx.Dialog):
         self.Layout()
         self.Centre()
 
-    def GetConnectionParameters(self, event):
-        user = self.txt_user.GetValue().strip()
-        password = self.txt_pass.GetValue()
-
-        if not all([user, password]):
-            wx.MessageBox(
-                f"Please fill in all fields",
-                "Login parameters required",
-                wx.OK | wx.ICON_INFORMATION)
-
-         # Disable button during test
-        self.btn_cnct.Enable(False)
-        wx.Yield()  # Update UI
-
-        print("Login parameters grabbed")
-
+    def GetConnectionParameters(self):
+        return {
+            "user": self.txt_user.GetValue().strip(),
+            "password": self.txt_pass.GetValue().strip(),
+        }
 
 #creating main window
 class MainFrame(wx.Frame):
@@ -294,27 +282,59 @@ class MainFrame(wx.Frame):
     #connection to Oracle Database from MainFrame
     def OnConnectToOracle(self, event):
         dlg = OracleConnectDialog(self)
-        dlg.Show()
 
-        print("Connection to Oracle initiated")
+        print('opening oracle connect dialogue')
 
-        dsn = f"{host}:{port}/{service}"
+        if dlg.ShowModal() == wx.ID_OK:
+            params = dlg.GetConnectionParameters()
 
-        try:
-            # Connection now uses Thick mode
-            with oracledb.connect(user=user, password=password, dsn=dsn) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT SYSDATE FROM DUAL")
-                    result = cursor.fetchone()
-            self.status_text.SetLabel(f"Success! Database time: {result[0]} (Thick mode)")
-            self.status_text.SetForegroundColour((0, 128, 0))  # Dark green
-        except oracledb.DatabaseError as e:
-            error, = e.args
-            self.status_text.SetLabel(f"Connection failed: {error.message}")
-            self.status_text.SetForegroundColour(wx.RED)
-        finally:
-            self.btn_test.Enable(True)
-            self.Layout()
+            user = params['user']
+            password = params['password']
+            host = 'udwh.base.roscap.com'
+            port = '1521'
+            service = 'udwh'
+
+            if not user or not password:
+                wx.MessageBox(f"Please fill in all fields", "Login parameters required", wx.OK | wx.ICON_INFORMATION)
+                return
+
+            dsn = f"{host}:{port}/{service}"
+
+            print(user)
+            print(password)
+            print("Connection to Oracle initiated")
+
+            try:
+                # Connection now uses Thick mode - REWRITE THIS PART AS NOTHING STORES CONNECTION AND CURSOR
+                with oracledb.connect(user=user, password=password, dsn=dsn) as connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute("SELECT SYSDATE FROM DUAL")
+                        result = cursor.fetchone()
+                #self.status_text.SetLabel(f"Success! Database time: {result[0]} (Thick mode)")
+                #self.status_text.SetForegroundColour((0, 128, 0))  # Dark green
+                wx.MessageBox(f"Successfully connected to Oracle Database, Database time: {result[0]}", 'Connected', wx.OK | wx.ICON_INFORMATION)
+
+            except oracledb.DatabaseError as e:
+                error, = e.args
+                #self.status_text.SetLabel(f"Connection failed: {error.message}")
+                #self.status_text.SetForegroundColour(wx.RED)
+                error_msg = f"Connection failed!\n\n{str(e)}"
+                self.SetStatusText("Connection failed")
+                wx.MessageBox(error_msg, "Connection Error", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)              #consider deleting
+
+            #finally:
+                #self.btn_cnct.Enable(True)
+                #self.Layout()
+
+        dlg.Destroy()
+
+    def __del__(self):
+        if self.cursor:
+            self.cursor.close()
+
+        if self.conn:
+            self.conn.close()
 
     #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
@@ -351,8 +371,7 @@ class MainFrame(wx.Frame):
             error_msg = f"Connection failed!\n\n{str(ex)}"
             self.SetStatusText("Connection failed")
             wx.MessageBox(error_msg, "Connection Error", wx.OK | wx.ICON_ERROR)
-
-            wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)              #consider deleting
 
     def OnDisconnect(self, event):
 
