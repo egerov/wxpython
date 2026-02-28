@@ -123,9 +123,9 @@ class OracleConnectDialog(wx.Dialog):
         # Buttons
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_test = wx.Button(panel, label="Connect")
-        self.btn_test.Bind(wx.EVT_BUTTON, self.OnConnect)
-        btn_sizer.Add(self.btn_test, flag=wx.RIGHT, border=10)
+        self.btn_cnct = wx.Button(panel, label="Connect")
+        self.btn_cnct.Bind(wx.EVT_BUTTON, self.GetConnectionParameters)
+        btn_sizer.Add(self.btn_cnct, flag=wx.RIGHT, border=10)
 
         btn_close = wx.Button(panel, label="Close")
         btn_close.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.ID_CANCEL))
@@ -137,7 +137,20 @@ class OracleConnectDialog(wx.Dialog):
         self.Layout()
         self.Centre()
 
-    def OnConnect(self, event):
+    def GetConnectionParameters(self, event):
+        user = self.txt_user.GetValue().strip()
+        password = self.txt_pass.GetValue()
+
+        if not all([user, password]):
+            wx.MessageBox(
+                f"Please fill in all fields",
+                "Login parameters required",
+                wx.OK | wx.ICON_INFORMATION)
+
+         # Disable button during test
+        self.btn_cnct.Enable(False)
+        wx.Yield()  # Update UI
+
         print("Login parameters grabbed")
 
 
@@ -280,10 +293,28 @@ class MainFrame(wx.Frame):
 
     #connection to Oracle Database from MainFrame
     def OnConnectToOracle(self, event):
-        print("Connection to Oracle initiated")
-
         dlg = OracleConnectDialog(self)
         dlg.Show()
+
+        print("Connection to Oracle initiated")
+
+        dsn = f"{host}:{port}/{service}"
+
+        try:
+            # Connection now uses Thick mode
+            with oracledb.connect(user=user, password=password, dsn=dsn) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT SYSDATE FROM DUAL")
+                    result = cursor.fetchone()
+            self.status_text.SetLabel(f"Success! Database time: {result[0]} (Thick mode)")
+            self.status_text.SetForegroundColour((0, 128, 0))  # Dark green
+        except oracledb.DatabaseError as e:
+            error, = e.args
+            self.status_text.SetLabel(f"Connection failed: {error.message}")
+            self.status_text.SetForegroundColour(wx.RED)
+        finally:
+            self.btn_test.Enable(True)
+            self.Layout()
 
     #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
@@ -312,7 +343,7 @@ class MainFrame(wx.Frame):
 
             wx.MessageBox(
                 f"Successfully connected to SQL Server",
-                "Connection OK",
+                'Connected',
                 wx.OK | wx.ICON_INFORMATION
             )
 
