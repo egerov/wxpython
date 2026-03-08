@@ -553,7 +553,7 @@ class MainFrame(wx.Frame):
             return
 
     def CreateReport(self, report_key, title='Report'):
-        if self.cursor is None:
+        if self.oracle_cursor is None:
             self.ShowMessage("Not connected to database", "Warning")
             self.ClearGrid()
             return
@@ -564,12 +564,12 @@ class MainFrame(wx.Frame):
         try:
             if report_key == 'lcr':
                 sql = """
-                SELECT * FROM dm_ras.ras_ambk_lcr
+                SELECT * FROM etl.CALC_SZKO
                 WHERE 1=1
-                AND DT_REP = ?
+                AND DT_REP = :dt
                 """
                 params = (self.GetReportDateISO(),)
-                #columns = ['Student ID', 'Name', 'Major']
+                columns = ['REPORT DATE', 'ITEM', 'LINE CODE', 'ARTICLE', 'AMOUNT', 'COEFFICIENT', 'WEIGHTED AMOUNT']
 
             elif report_key == 'nsfr':
                 sql = "SELECT * FROM Articles"
@@ -604,7 +604,6 @@ class MainFrame(wx.Frame):
                 col_names = columns
             else:
                 col_names = [desc[0].upper().replace("_", " ") for desc in self.cursor.description]
-
 
 
             #setting up grid structure
