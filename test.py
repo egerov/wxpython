@@ -118,6 +118,7 @@ class OracleConnectDialog(wx.Dialog):
         # Password
         main_sizer.Add(wx.StaticText(panel, label="Password:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_pass = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
+        self.txt_pass.SetValue('Gerov_evgeniy789!!')
         main_sizer.Add(self.txt_pass, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Buttons
@@ -305,36 +306,24 @@ class MainFrame(wx.Frame):
             print("Connection to Oracle initiated")
 
             try:
-                # Connection now uses Thick mode - REWRITE THIS PART AS NOTHING STORES CONNECTION AND CURSOR
-                with oracledb.connect(user=user, password=password, dsn=dsn) as connection:
-                    with connection.cursor() as cursor:
-                        cursor.execute("SELECT SYSDATE FROM DUAL")
-                        result = cursor.fetchone()
-                #self.status_text.SetLabel(f"Success! Database time: {result[0]} (Thick mode)")
-                #self.status_text.SetForegroundColour((0, 128, 0))  # Dark green
-                wx.MessageBox(f"Successfully connected to Oracle Database, Database time: {result[0]}", 'Connected', wx.OK | wx.ICON_INFORMATION)
+                self.oracle_connection = oracledb.connect(user=user, password=password, dsn=dsn)
+                self.oracle_cursor = self.oracle_connection.cursor()
+                wx.MessageBox(f"Successfully connected to Oracle Database", 'Connected', wx.OK | wx.ICON_INFORMATION)
 
             except oracledb.DatabaseError as e:
                 error, = e.args
-                #self.status_text.SetLabel(f"Connection failed: {error.message}")
-                #self.status_text.SetForegroundColour(wx.RED)
                 error_msg = f"Connection failed!\n\n{str(e)}"
                 self.SetStatusText("Connection failed")
                 wx.MessageBox(error_msg, "Connection Error", wx.OK | wx.ICON_ERROR)
-                wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)              #consider deleting
-
-            #finally:
-                #self.btn_cnct.Enable(True)
-                #self.Layout()
 
         dlg.Destroy()
 
     def __del__(self):
-        if self.cursor:
-            self.cursor.close()
+        if self.oracle_cursor:
+            self.oracle_cursor.close()
 
-        if self.conn:
-            self.conn.close()
+        if self.oracle_connection:
+            self.oracle_connection.close()
 
     #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
@@ -371,7 +360,13 @@ class MainFrame(wx.Frame):
             error_msg = f"Connection failed!\n\n{str(ex)}"
             self.SetStatusText("Connection failed")
             wx.MessageBox(error_msg, "Connection Error", wx.OK | wx.ICON_ERROR)
-            wx.MessageBox("Connection failed!", "Connection failure", wx.OK | wx.ICON_INFORMATION)              #consider deleting
+
+    def __del__(self):
+        if self.cursor:
+            self.cursor.close()
+
+        if self.conn:
+            self.conn.close()
 
     def OnDisconnect(self, event):
 
@@ -596,8 +591,8 @@ class MainFrame(wx.Frame):
                 return
 
             #executing query
-            self.cursor.execute(sql, params)
-            rows = self.cursor.fetchall()
+            self.oracle_cursor.execute(sql, params)
+            rows = self.oracle_cursor.fetchall()
 
             if not rows:
                 print("no rows")
