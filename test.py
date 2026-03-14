@@ -158,8 +158,8 @@ class MainFrame(wx.Frame):
         excel = toolbar.AddTool(wx.ID_ANY, 'Excel', load_icon('3.png'), 'Export to Excel')
         open = toolbar.AddTool(wx.ID_ANY, 'Open', load_icon('4.png'), 'Open')
         upload = toolbar.AddTool(wx.ID_ANY, 'Upload', load_icon('5.png'), 'Upload')
-        database = toolbar.AddTool(wx.ID_EXECUTE, 'Create report', load_icon('6.png'), 'Create report')
-        create_report = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('7.png'), 'Database')
+        create_report = toolbar.AddTool(wx.ID_EXECUTE, 'Create report', load_icon('6.png'), 'Create report')
+        database = toolbar.AddTool(wx.ID_ANY, 'Database', load_icon('7.png'), 'Database')
         toolbar.AddSeparator()
 
         date = wx.StaticText(toolbar, label='Report date: ')
@@ -450,7 +450,7 @@ class MainFrame(wx.Frame):
             self.tree.SelectItem(lcr)
 
     def OnCreateReport(self, event):
-        if self.current_view == 'Reports' and hasattr(self, 'current_report'):
+        if self.current_view != 'Accounting' and hasattr(self, 'current_report'):
             self.CreateReport(self.current_report)
 
     def OnTreeSelChanged(self, event):
