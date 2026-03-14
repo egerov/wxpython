@@ -238,6 +238,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSwitchViews, self.mnu_views)
         self.Bind(wx.EVT_MENU, self.OnConnectToOracle, self.mnu_connect)
         self.Bind(wx.EVT_MENU, self.ConnectWindowsAuth, self.mnu_connect2)
+        self.Bind(wx.EVT_MENU, self.OnOracleDisconnect, self.mnu_disconnect2)
         self.Bind(wx.EVT_MENU, self.OnDisconnect, self.mnu_disconnect2)
 
     def CreateTools(self):
@@ -267,7 +268,6 @@ class MainFrame(wx.Frame):
 
         toolbar.Realize()
 
-    #menu handlers
     def OnSwitchAccounting(self, event):
         self.current_view = 'Accounting'
         self.UpdateView()
@@ -280,7 +280,6 @@ class MainFrame(wx.Frame):
         self.current_view = 'Views'
         self.UpdateView()
 
-    #connection to Oracle Database from MainFrame
     def OnConnectToOracle(self, event):
         dlg = OracleConnectDialog(self)
 
@@ -301,14 +300,14 @@ class MainFrame(wx.Frame):
 
             dsn = f"{host}:{port}/{service}"
 
-            print(user)
-            print(password)
-            print("Connection to Oracle initiated")
-
             try:
                 self.oracle_connection = oracledb.connect(user=user, password=password, dsn=dsn)
                 self.oracle_cursor = self.oracle_connection.cursor()
                 wx.MessageBox(f"Successfully connected to Oracle Database", 'Connected', wx.OK | wx.ICON_INFORMATION)
+
+                self.SetStatusText(f"Connected to {host}")
+                self.mnu_connect.Enable(False)
+                self.mnu_disconnect.Enable(True)
 
             except oracledb.DatabaseError as e:
                 error, = e.args
@@ -325,7 +324,6 @@ class MainFrame(wx.Frame):
         if self.oracle_connection:
             self.oracle_connection.close()
 
-    #connection to MS SQL Server with Windows Authentication
     def ConnectWindowsAuth(self, event):
 
         if self.conn is not None:
@@ -377,7 +375,7 @@ class MainFrame(wx.Frame):
         try:
             if self.cursor:
                 self.cursor.close()
-            self.conn.close()
+                self.conn.close()
 
             self.conn = None
             self.cursor = None
@@ -390,6 +388,29 @@ class MainFrame(wx.Frame):
 
         except Exception as ex:
             wx.MessageBox(f"Error during disconnect:\n{str(ex)}", "Warning", wx.OK | wx.ICON_WARNING)
+
+    def OnOracleDisconnect(self, event):
+
+        if self.oracle_connection is None:
+            wx.MessageBox("Not connected", 'Info', wx.OK | wx.ICON_INFORMATION)
+            return
+
+        try:
+            if self.oracle_cursor:
+                self.oracle_cursor.close()
+                self.oracle_connection.close()
+
+            self.oracle_connection = None
+            self.oracle_cursor = None
+
+            self.SetStatusText("Disconnected from Oracle Database")
+            self.mnu_connect.Enable(True)
+            self.mnu_disconnect.Enable(False)
+
+            wx.MessageBox("Disconnected successfully", 'Info', wx.OK | wx.ICON_INFORMATION)
+
+        except Exception as ex:
+            wx.MessageBox(f"Error during disconnect:\n{str(ex)}", 'Warning', wx.OK | wx.ICON_INFORMATION)
 
     def CreateLayout(self):
 
