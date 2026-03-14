@@ -471,7 +471,8 @@ class MainFrame(wx.Frame):
             'Liquidity Coverage Ratio': 'lcr',
             'Net Stable Funding Ratio': 'nsfr',
             'Weighted average rates': 'weighted_rates',
-            'Due from banks': 'banks_a'
+            'Due from banks': 'banks_a',
+            'Due to banks': 'banks_l'
             #More reports to be added here
         }
 
@@ -518,9 +519,40 @@ class MainFrame(wx.Frame):
             elif report_key == 'banks_a':
                 sql = """
                 SELECT * FROM DM_RAS.RAS_AMBK_LCR
-                WHERE DT_REP = ?
+                WHERE DT_REP = :dt
                 """
                 params = (self.GetReportDateISO(),)
+                columns = ['REPORT DATE', 'ACCOUNT', 'ACCOUNT ID', 'ACCOUNT DESCRIPTION', 'CONTRACT', 'CONTRACT ID', 'ACCOUNT ROLE', 'CONTO', 'CLIENT ID', 'CLIENT SUBTYPE', 'INN', 'CLIENT NAME', 'CLIENT TYPE', 'COUNTRY', 'REGION ID', 'SEGMENT', 'PRODUCT', 'PRODUCT TYPE', 'PRODUCT SUBTYPE', 'OKOPF', 'OKVED CODE', 'OKVED NAME', 'OKVED TYPE', 'CONTRACT TYPE', 'SME', 'CURRENCY', 'OPEN DATE', 'CLOSE DATE PLAN', 'CLOSE DATE FACT', 'CLOSE DATE', 'INFLOW', 'AMOUNT', 'QUALITY CATEGORY', 'PROVISION RATE', 'OVERDUE AMOUNT', 'PD', 'LOSS ALLOWANCE']
+
+            elif report_key == 'banks_l':
+                sql = """
+                SELECT
+
+                DT_REP,
+                CONTO,
+                PROD_TYPE,
+                PROD_SUBTYPE,
+                CON_TYPE,
+                OUTFLOW,
+                SUM(AMOUNT_RUB)
+
+                FROM DM_RAS.RAS_PMBK_LCR
+
+                WHERE 1=1
+                AND DT_REP = :dt
+
+                GROUP BY
+                DT_REP,
+                CONTO,
+                PROD_TYPE,
+                PROD_SUBTYPE,
+                CON_TYPE,
+                OUTFLOW
+
+                ORDER BY CONTO
+                """
+                params = (self.GetReportDateISO(),)
+                columns = ['REPORT DATE', 'CONTO', 'PRODUCT TYPE', 'PRODUCT SUBTYPE', 'CONTRACT TYPE', 'OUTFLOW', 'AMOUNT']
 
             else:
                 self.display_grid.AppendRows(1)
