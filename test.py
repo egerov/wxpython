@@ -470,7 +470,8 @@ class MainFrame(wx.Frame):
         report_map = {
             'Liquidity Coverage Ratio': 'lcr',
             'Net Stable Funding Ratio': 'nsfr',
-            'Weighted average rates': 'weighted_rates'
+            'Weighted average rates': 'weighted_rates',
+            'Due from banks': 'banks_a'
             #More reports to be added here
         }
 
@@ -513,6 +514,13 @@ class MainFrame(wx.Frame):
                 params = (self.GetReportDateISO(),)
                 columns = ['DATE', 'ITEM', 'AMOUNT']
                 print("weighted rates script OK")
+
+            elif report_key == 'banks_a':
+                sql = """
+                SELECT * FROM DM_RAS.RAS_AMBK_LCR
+                WHERE DT_REP = ?
+                """
+                params = (self.GetReportDateISO(),)
 
             else:
                 self.display_grid.AppendRows(1)
