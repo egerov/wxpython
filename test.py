@@ -489,6 +489,17 @@ class MainFrame(wx.Frame):
             self.ClearGrid()
             return
 
+        project_folder = os.path.dirname(os.path.abspath(__file__))
+        scripts_folder = os.path.join(project_folder, 'scripts')
+        script = os.path.join(scripts_folder, 'script.sql')
+
+        if not os.path.exists(script):
+            wx.MessageBox(f"SQL file not found: {script}", "Error", wx.OK | wx.ICON_ERROR)
+            return
+
+        with open(script, 'r') as file:
+            sql_query = file.read().strip()
+
         #removing old data and structure
         self.ClearGrid()
 
@@ -517,10 +528,13 @@ class MainFrame(wx.Frame):
                 print("weighted rates script OK")
 
             elif report_key == 'banks_a':
-                sql = """
-                SELECT * FROM DM_RAS.RAS_AMBK_LCR
-                WHERE DT_REP = :dt
-                """
+
+                sql = sql_query
+
+                #sql = """
+                #SELECT * FROM DM_RAS.RAS_AMBK_LCR
+                #WHERE DT_REP = :dt
+                #"""
                 params = (self.GetReportDateISO(),)
                 columns = ['REPORT DATE', 'ACCOUNT', 'ACCOUNT ID', 'ACCOUNT DESCRIPTION', 'CONTRACT', 'CONTRACT ID', 'ACCOUNT ROLE', 'CONTO', 'CLIENT ID', 'CLIENT SUBTYPE', 'INN', 'CLIENT NAME', 'CLIENT TYPE', 'COUNTRY', 'REGION ID', 'SEGMENT', 'PRODUCT', 'PRODUCT TYPE', 'PRODUCT SUBTYPE', 'OKOPF', 'OKVED CODE', 'OKVED NAME', 'OKVED TYPE', 'CONTRACT TYPE', 'SME', 'CURRENCY', 'OPEN DATE', 'CLOSE DATE PLAN', 'CLOSE DATE FACT', 'CLOSE DATE', 'INFLOW', 'AMOUNT', 'QUALITY CATEGORY', 'PROVISION RATE', 'OVERDUE AMOUNT', 'PD', 'LOSS ALLOWANCE']
 
