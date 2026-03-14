@@ -528,7 +528,7 @@ class MainFrame(wx.Frame):
                 sql = """
                 SELECT
 
-                DT_REP,
+                TO_CHAR(DT_REP, 'YYYY-MM-DD')
                 CONTO,
                 PROD_TYPE,
                 PROD_SUBTYPE,
