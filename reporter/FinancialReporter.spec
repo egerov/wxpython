@@ -8,7 +8,11 @@ a = Analysis(
     datas=[
 	('icons', 'scripts'),
 	],
-    hiddenimports=[],
+    hiddenimports=[
+	'cryptography',
+	'cryptography.hazmat.primitives.kdf.pbkdf2',
+	'cryptography.hazmat.backends.openssl',
+],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
