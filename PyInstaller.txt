@@ -15,3 +15,14 @@ pyinstaller --clean Financial Reporter.spec
 
 B:\3. IT\Python\wxpython\reporter\dist\Financial Reporter
 
+
+Third version:
+
+В итоге в Bash запустил вот такой код и все стало запускаться без проблем на рабочем ПК (из ответа Grok):
+
+pyinstaller --clean --windowed --noconsole \
+    --collect-all cryptography \
+    --hidden-import=cryptography.hazmat.primitives.kdf.pbkdf2 \
+    --add-data "icons;icons" --add-data "scripts;scripts" \
+    main.py
+
