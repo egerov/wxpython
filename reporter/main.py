@@ -491,14 +491,6 @@ class MainFrame(wx.Frame):
 
         project_folder = os.path.dirname(os.path.abspath(__file__))
         scripts_folder = os.path.join(project_folder, 'scripts')
-        script = os.path.join(scripts_folder, 'script.sql')
-
-        if not os.path.exists(script):
-            wx.MessageBox(f"SQL file not found: {script}", "Error", wx.OK | wx.ICON_ERROR)
-            return
-
-        with open(script, 'r') as file:
-            sql_query = file.read().strip()
 
         #removing old data and structure
         self.ClearGrid()
@@ -529,7 +521,14 @@ class MainFrame(wx.Frame):
 
             elif report_key == 'banks_a':
 
-                sql = sql_query
+                script = os.path.join(scripts_folder, 'script.sql')
+
+                if not os.path.exists(script):
+                    wx.MessageBox(f"SQL file not found: {script}", "Error", wx.OK | wx.ICON_ERROR)
+                    return
+
+                with open(script, 'r') as file:
+                    sql = file.read().strip()
 
                 #sql = """
                 #SELECT * FROM DM_RAS.RAS_AMBK_LCR
