@@ -1,0 +1,17 @@
+pyinstaller --onefile --windowed --icon=logo.ico main.py
+
+
+Second version:
+
+1. Creating the spec (build and dist) folders:
+
+pyinstaller --name "Financial Reporter" --windowed --icon=logo.ico main.py
+
+2. Building:
+
+pyinstaller --clean Financial Reporter.spec
+
+Не запускалась программа, но потом перенес папки icons, scripts в следующую папку и все заработало:
+
+B:\3. IT\Python\wxpython\reporter\dist\Financial Reporter
+
