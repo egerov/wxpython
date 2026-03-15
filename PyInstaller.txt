@@ -20,9 +20,18 @@ Third version:
 
 В итоге в Bash запустил вот такой код и все стало запускаться без проблем на рабочем ПК (из ответа Grok):
 
+ШАГ 1. Создание build и dist, а также файла с приложением main с помощью кода (по факту в уже существующих папках build и dist создаются папки main):
+
 pyinstaller --clean --windowed --noconsole \
     --collect-all cryptography \
     --hidden-import=cryptography.hazmat.primitives.kdf.pbkdf2 \
     --add-data "icons;icons" --add-data "scripts;scripts" \
     main.py
 
+То есть уже на этапе создания папок build и dist, а также файла с приложением main прописать команду --collect-all cryptography
+
+ШАГ 2.
+
+В папке, где расположен main.spec в Bash запустил следующую команду:
+
+pyinstaller --clean main.spec 
