@@ -471,8 +471,8 @@ class MainFrame(wx.Frame):
             'Liquidity Coverage Ratio': 'lcr',
             'Net Stable Funding Ratio': 'nsfr',
             'Weighted average rates': 'weighted_rates',
-            'Due from banks': 'banks_a',
-            'Due to banks': 'banks_l'
+            'Due from banks': 'view1',
+            'Due to banks': 'view2'
             #More reports to be added here
         }
 
@@ -519,9 +519,9 @@ class MainFrame(wx.Frame):
                 columns = ['DATE', 'ITEM', 'AMOUNT']
                 print("weighted rates script OK")
 
-            elif report_key == 'banks_a':
+            elif report_key == 'view1':
 
-                script = os.path.join(scripts_folder, 'script.sql')
+                script = os.path.join(scripts_folder, 'view1.sql')
 
                 if not os.path.exists(script):
                     wx.MessageBox(f"SQL file not found: {script}", "Error", wx.OK | wx.ICON_ERROR)
@@ -530,40 +530,20 @@ class MainFrame(wx.Frame):
                 with open(script, 'r') as file:
                     sql = file.read().strip()
 
-                #sql = """
-                #SELECT * FROM DM_RAS.RAS_AMBK_LCR
-                #WHERE DT_REP = :dt
-                #"""
                 params = (self.GetReportDateISO(),)
                 columns = ['REPORT DATE', 'ACCOUNT', 'ACCOUNT ID', 'ACCOUNT DESCRIPTION', 'CONTRACT', 'CONTRACT ID', 'ACCOUNT ROLE', 'CONTO', 'CLIENT ID', 'CLIENT SUBTYPE', 'INN', 'CLIENT NAME', 'CLIENT TYPE', 'COUNTRY', 'REGION ID', 'SEGMENT', 'PRODUCT', 'PRODUCT TYPE', 'PRODUCT SUBTYPE', 'OKOPF', 'OKVED CODE', 'OKVED NAME', 'OKVED TYPE', 'CONTRACT TYPE', 'SME', 'CURRENCY', 'OPEN DATE', 'CLOSE DATE PLAN', 'CLOSE DATE FACT', 'CLOSE DATE', 'INFLOW', 'AMOUNT', 'QUALITY CATEGORY', 'PROVISION RATE', 'OVERDUE AMOUNT', 'PD', 'LOSS ALLOWANCE']
 
-            elif report_key == 'banks_l':
-                sql = """
-                SELECT
+            elif report_key == 'view2':
 
-                TO_CHAR(DT_REP, 'YYYY-MM-DD')
-                CONTO,
-                PROD_TYPE,
-                PROD_SUBTYPE,
-                CON_TYPE,
-                OUTFLOW,
-                SUM(AMOUNT_RUB)
+                script = os.path.join(scripts_folder, 'view2.sql')
 
-                FROM DM_RAS.RAS_PMBK_LCR
+                if not os.path.exists(script):
+                    wx.MessageBox(f"SQL file not found: {script}", "Error", wx.OK | wx.ICON_ERROR)
+                    return
 
-                WHERE 1=1
-                AND DT_REP = :dt
+                with open(script, 'r') as file:
+                    sql = file.read().strip()
 
-                GROUP BY
-                DT_REP,
-                CONTO,
-                PROD_TYPE,
-                PROD_SUBTYPE,
-                CON_TYPE,
-                OUTFLOW
-
-                ORDER BY CONTO
-                """
                 params = (self.GetReportDateISO(),)
                 columns = ['REPORT DATE', 'CONTO', 'PRODUCT TYPE', 'PRODUCT SUBTYPE', 'CONTRACT TYPE', 'OUTFLOW', 'AMOUNT']
 
