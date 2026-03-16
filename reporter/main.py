@@ -18,13 +18,11 @@ class OracleConnectDialog(wx.Dialog):
         # Username
         main_sizer.Add(wx.StaticText(panel, label="Username:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_user = wx.TextCtrl(panel)
-        self.txt_user.SetValue('gerov_evgeniy[LAB_BUH]')
         main_sizer.Add(self.txt_user, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Password
         main_sizer.Add(wx.StaticText(panel, label="Password:"), flag=wx.LEFT | wx.TOP | wx.RIGHT, border=10)
         self.txt_pass = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
-        self.txt_pass.SetValue('Gerov_evgeniy789!!')
         main_sizer.Add(self.txt_pass, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         # Buttons
